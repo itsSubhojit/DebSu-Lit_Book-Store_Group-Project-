@@ -21,10 +21,18 @@
 
 ---
 
-## 🏗️ Architecture & Directory Structure
+## 🏗️ Architecture & System Design
+
+<p align="center">
+  <img src="./Assets/diagram.png" alt="System Architecture Diagram" width="100%" />
+</p>
+
+### 📁 Directory Structure
 
 ```text
 DebSu-Lit_Book-Store_Group-Project-/
+├── Assets/
+│   └── diagram.png                # System Architecture & Flow Diagram
 ├── BOOK STORE (DebSu Lit)/
 │   ├── bookstore.sql              # Pre-populated MySQL database schema & sample catalog
 │   ├── Group Documentation.pdf    # Academic project report and documentation
