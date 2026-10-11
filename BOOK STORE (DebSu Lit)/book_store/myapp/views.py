@@ -143,9 +143,6 @@ def featuresbook1(request,item_id):
     item=Item.objects.get(id=item_id)
     return render(request, 'myapp/featuresbook1.html', {'item':item})
 
-def cart(request):
-    return render(request, 'myapp/cart.html')
-
 def add_to_cart(request, item_id):
 	if request.user.is_authenticated:
 		item = Item.objects.get(id=item_id)
@@ -175,8 +172,6 @@ def remove_cart(request,id):
     else:
         return redirect('/login')
 
-# def initiate_payment(request):
-#     return HttpResponse('Hi')
 
 def initiate_payment(request):
     if not request.user.is_authenticated:
