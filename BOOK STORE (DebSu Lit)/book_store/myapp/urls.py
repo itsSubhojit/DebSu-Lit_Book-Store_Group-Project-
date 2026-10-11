@@ -23,8 +23,10 @@ urlpatterns=[
     path('cart', views.view_cart, name='view_cart'),
     path('remove/<int:id>', views.remove_cart, name='remove_cart'),
     path("initiate-payment/", views.initiate_payment, name="initiate_payment"),
+    path("verify-payment/", views.verify_payment, name="verify_payment"),
     path("payment-success/", views.payment_success, name="payment_success"),
     path("payment-failed/", views.payment_failed, name="payment_failed"),
+    path("retry-payment/", views.view_cart, name="retry_payment"),
     path("myorder/", views.myOrders, name="my-orders"),
 ]
 

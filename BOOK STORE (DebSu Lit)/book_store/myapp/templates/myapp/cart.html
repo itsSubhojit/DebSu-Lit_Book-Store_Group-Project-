@@ -56,23 +56,28 @@
 <script>
     $(document).ready(function() {
         $("#pay-button").click(function(e) {
-            e.preventDefault(); // Prevent the default form submission
-            
-            // Get the amount entered by the user
-            const amount = $("#amount").val();
-            const address=$("#address").val();
+            e.preventDefault();
 
-            // Make an AJAX request to initiate the payment
+            const address = $("#address").val().trim();
+            if (!address) {
+                alert("Please enter a delivery address before proceeding to payment.");
+                $("#address").focus();
+                return;
+            }
+
+            const $btn = $("#pay-button");
+            $btn.prop("disabled", true).text("Initializing checkout...");
+
+            // Initiate payment on the server (amount is safely computed backend-side)
             $.ajax({
                 type: "POST",
                 url: "/initiate-payment/",
-                data: { amount: amount, address:address },
+                data: { address: address },
                 dataType: "json",
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("X-CSRFToken", $("[name=csrfmiddlewaretoken]").val());
                 },
                 success: function(data) {
-                    // Initialize Razorpay Checkout with the received values
                     const options = {
                         key: data.key,
                         amount: data.amount,
@@ -80,27 +85,60 @@
                         order_id: data.id,
                         name: data.name,
                         description: data.description,
-                        image: data.image,
-                        handler: function(response) {
-                            // Handle the payment success or failure and redirect accordingly
-                            if (response.razorpay_payment_id) {
-                                // Payment successful, redirect to the success URL
-                                window.location.href = "/payment-success/";
-                            } else {
-                                // Payment failed or canceled, redirect to the failure URL
-                                window.location.href = "/payment-failed/";
+                        prefill: data.prefill || {},
+                        theme: {
+                            color: "#007bff"
+                        },
+                        modal: {
+                            ondismiss: function() {
+                                $btn.prop("disabled", false).text("Pay Now");
                             }
                         },
-                        prefill: {
-                            name: "Card Holder Name",
-                        },
+                        handler: function(response) {
+                            $btn.text("Verifying payment...");
+                            // Send cryptographically verifiable signature to server
+                            $.ajax({
+                                type: "POST",
+                                url: "/verify-payment/",
+                                data: {
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                    address: address
+                                },
+                                dataType: "json",
+                                beforeSend: function(xhr) {
+                                    xhr.setRequestHeader("X-CSRFToken", $("[name=csrfmiddlewaretoken]").val());
+                                },
+                                success: function(verifyRes) {
+                                    if (verifyRes.status === "success") {
+                                        window.location.href = "/payment-success/";
+                                    } else {
+                                        window.location.href = "/payment-failed/";
+                                    }
+                                },
+                                error: function(verifyErr) {
+                                    console.error("Payment verification failed:", verifyErr);
+                                    window.location.href = "/payment-failed/";
+                                }
+                            });
+                        }
                     };
 
                     const rzp = new Razorpay(options);
+                    rzp.on('payment.failed', function(resp) {
+                        console.error("Razorpay payment failed:", resp.error);
+                        window.location.href = "/payment-failed/";
+                    });
                     rzp.open();
                 },
                 error: function(error) {
-                    console.error("Error initiating payment:", error);
+                    $btn.prop("disabled", false).text("Pay Now");
+                    let msg = "Error initiating payment. Please try again.";
+                    if (error.responseJSON && error.responseJSON.error) {
+                        msg = error.responseJSON.error;
+                    }
+                    alert(msg);
                 }
             });
         });

@@ -10,22 +10,47 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env
+env_search_paths = [
+    BASE_DIR / '.env',
+    BASE_DIR.parent.parent / '.env',
+]
+
+try:
+    from dotenv import load_dotenv
+    for env_path in env_search_paths:
+        if env_path.exists():
+            load_dotenv(env_path)
+            break
+except ImportError:
+    for env_path in env_search_paths:
+        if env_path.exists():
+            with open(env_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        k, v = line.split('=', 1)
+                        k, v = k.strip(), v.strip().strip('"').strip("'")
+                        if k not in os.environ:
+                            os.environ[k] = v
+            break
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=g+4kx-_y92)=cy4vh^6%bbnim-xdz9v6eu^b7%_3#)o*p0m(p'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-=g+4kx-_y92)=cy4vh^6%bbnim-xdz9v6eu^b7%_3#)o*p0m(p')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 't', 'yes')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '*').split(',') if h.strip()]
 
 
 # Application definition
@@ -77,14 +102,13 @@ WSGI_APPLICATION = 'book_store.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # Or mysql_connector
-        'NAME': 'bookstore',  # Replace with your database name
-        'USER': 'root',  # Replace with your MySQL username
-        'PASSWORD': '',  # Replace with your MySQL password
-        'HOST': '127.0.0.1',  # Or your MySQL server IP/hostname
-        'PORT': '3306',  # Or your MySQL port
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME', 'bookstore'),
+        'USER': os.environ.get('DB_USER', 'root'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
     }
-
 }
 
 
@@ -133,8 +157,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL='myapp.CustomUser'
 
-RAZORPAY_API_KEY = 'rzp_test_jIctH4BZwcxQXF'
-RAZORPAY_API_SECRET = 'zAh1TuOegxlNpTdb8Qzl0Kn6'
+RAZORPAY_API_KEY = os.environ.get('RAZORPAY_API_KEY', '')
+RAZORPAY_API_SECRET = os.environ.get('RAZORPAY_API_SECRET', '')
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
 
 

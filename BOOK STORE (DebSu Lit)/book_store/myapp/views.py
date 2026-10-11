@@ -1,4 +1,6 @@
+import time
 import razorpay
+import razorpay.errors
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -177,41 +179,122 @@ def remove_cart(request,id):
 #     return HttpResponse('Hi')
 
 def initiate_payment(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Please log in to proceed with payment."}, status=401)
+
     if request.method == "POST":
-        amount = int(request.POST["amount"]) * 100  # Amount in paise
-        address=request.POST['address']
+        address = request.POST.get('address', '').strip()
+        if not address:
+            return JsonResponse({"error": "Delivery address is required."}, status=400)
+
+        cart_items = CartItem.objects.filter(user=request.user)
+        if not cart_items.exists():
+            return JsonResponse({"error": "Your cart is empty."}, status=400)
+
+        # Secure server-side calculation: never trust client-submitted amount
+        total_price = sum(int(item.item.price) * int(item.quantity) for item in cart_items)
+        if total_price <= 0:
+            return JsonResponse({"error": "Invalid order amount."}, status=400)
+
+        amount_in_paise = int(total_price * 100)
+
+        if not settings.RAZORPAY_API_KEY or not settings.RAZORPAY_API_SECRET:
+            return JsonResponse({"error": "Razorpay payment keys are not configured. Please set them in your .env file."}, status=500)
+
         client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET))
 
+        receipt_id = f"rcpt_{request.user.id}_{int(time.time())}"
         payment_data = {
-            "amount": amount,
+            "amount": amount_in_paise,
             "currency": "INR",
-            "receipt": "order_receipt",
+            "receipt": receipt_id,
             "notes": {
-                "email": "user_email@example.com",
+                "user_id": str(request.user.id),
+                "username": request.user.username,
             },
         }
 
-        order = client.order.create(data=payment_data)
-        
-        # Include key, name, description, and image in the JSON response
+        try:
+            order = client.order.create(data=payment_data)
+        except Exception as e:
+            return JsonResponse({"error": f"Failed to initiate order with Razorpay: {str(e)}"}, status=500)
+
+        # Store pending address in session for payment verification
+        request.session['pending_order_address'] = address
+        request.session['pending_razorpay_order_id'] = order["id"]
+
+        user_name = request.user.get_full_name() or request.user.username
+        user_email = request.user.email or ""
+        user_contact = getattr(request.user, 'mobile', '') or ""
+
         response_data = {
             "id": order["id"],
             "amount": order["amount"],
             "currency": order["currency"],
             "key": settings.RAZORPAY_API_KEY,
-            "name": "My Project",
-            "description": "Payment for Your Product",
-            "image": "https://yourwebsite.com/logo.png",  # Replace with your logo URL
+            "name": "DebSu Lit Book Store",
+            "description": "Payment for Book Purchase",
+            "prefill": {
+                "name": user_name,
+                "email": user_email,
+                "contact": user_contact,
+            },
         }
-        cart_items=CartItem.objects.filter(user=request.user)
-        # payment_id=response_data.id
-        for cart in cart_items:
-            Order.objects.get_or_create(user=request.user, item= cart.item, quantity=cart.quantity, payment_status='success', address=address)
-        
-        CartItem.objects.filter(user=request.user).delete()
 
         return JsonResponse(response_data)
-    return redirect('myapp:viewCart.html')
+    return redirect('/cart')
+
+
+def verify_payment(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"status": "failure", "message": "User not authenticated."}, status=401)
+
+    if request.method == "POST":
+        razorpay_order_id = request.POST.get("razorpay_order_id", "").strip()
+        razorpay_payment_id = request.POST.get("razorpay_payment_id", "").strip()
+        razorpay_signature = request.POST.get("razorpay_signature", "").strip()
+        address = request.POST.get("address", "").strip() or request.session.get("pending_order_address", "")
+
+        if not (razorpay_order_id and razorpay_payment_id and razorpay_signature):
+            return JsonResponse({"status": "failure", "message": "Missing payment verification parameters."}, status=400)
+
+        client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET))
+
+        params_dict = {
+            "razorpay_order_id": razorpay_order_id,
+            "razorpay_payment_id": razorpay_payment_id,
+            "razorpay_signature": razorpay_signature,
+        }
+
+        # Cryptographically verify that payment was authorized by Razorpay
+        try:
+            client.utility.verify_payment_signature(params_dict)
+        except razorpay.errors.SignatureVerificationError:
+            return JsonResponse({"status": "failure", "message": "Payment signature verification failed."}, status=400)
+        except Exception as e:
+            return JsonResponse({"status": "failure", "message": f"Verification error: {str(e)}"}, status=400)
+
+        # Payment verified: create orders and clear cart
+        cart_items = CartItem.objects.filter(user=request.user)
+        for cart in cart_items:
+            Order.objects.create(
+                user=request.user,
+                item=cart.item,
+                quantity=cart.quantity,
+                payment_status="success",
+                payment_id=razorpay_payment_id,
+                address=address,
+            )
+
+        cart_items.delete()
+
+        # Clean up session keys
+        request.session.pop("pending_order_address", None)
+        request.session.pop("pending_razorpay_order_id", None)
+
+        return JsonResponse({"status": "success", "message": "Payment verified successfully!"})
+
+    return JsonResponse({"status": "failure", "message": "Invalid request method."}, status=405)
 
 def payment_success(request):
     return render(request, "myapp/payment_success.html")
