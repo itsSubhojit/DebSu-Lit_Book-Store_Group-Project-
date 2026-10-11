@@ -1,0 +1,57 @@
+{% load static %}
+{% include './header.html' %}
+
+    <title>Book Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'myapp/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'myapp/css/featuresbook.css' %}">
+    
+    <div class="home-button">
+        <a href="{% url 'hmpage' %}"><button class="btn btn-secondary"><i class="fa fa-home"></i> Home</button></a>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <img src="{{item.b_img.url}}" alt="Book Photo" class="book-photo">
+            </div>
+            <div class="col-md-8">
+                <h2>{{item.name}}</h2>
+                <p><strong>By:</strong> {{item.author}}</p>
+                <p><strong>Publisher:</strong>{{item.publisher}}</p>
+                <p><strong>Price:</strong>{{item.price}}</p>
+                <p><strong>Rating:</strong> 
+                    <span class="star-rating">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                    </span> 5.0 | 5 Reviews
+                </p>
+                <div class="btn-group">
+                    <a href="{% url 'add_to_cart' item.id %}">
+                        <button class="btn btn-primary">Add to Cart</button>
+                    </a>
+                   
+                </div>
+            </div>
+        </div>
+        <div class="about-book">
+            <h3>About Book</h3>
+            <p>{{item.description}}</p>
+        </div>
+        <div class="book-details">
+            <h3>Book Details</h3>
+            <ul>
+                <li><strong>ISBN-13:</strong>{{item.isbn}}</li>
+                <li><strong>Publisher:</strong> {{item.publisher}}</li>
+                <li><strong>Binding:</strong> {{item.binding}}</li>
+                <li><strong>No of Pages:</strong> {{item.page_no}}</li>
+                <li><strong>Publisher Date:</strong> {{item.pub_date}}</li>
+                <li><strong>Language:</strong> {{item.language}}</li>
+            </ul>
+        </div>
+    </div>
+    
+{% include './footer.html' %}
+

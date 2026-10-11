@@ -1,0 +1,73 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Successful</title>
+    <style>
+        body {
+            background: linear-gradient(to right, deepskyblue, white); /* Warm sunset tones */
+            color: #2c2c2c;
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .success-message {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 50px;
+            color: red; /* Soothing teal tone */
+        }
+
+        .quote {
+            font-size: 1.5rem;
+            font-style: italic;
+            margin: 20px 0;
+        }
+
+        .thanks {
+            font-size: 1.2rem;
+            margin: 20px 0;
+        }
+
+        .animation {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 40px auto;
+            animation: fadeIn 2s infinite alternate;
+            color: black; /* Burnt orange for contrast */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0.5;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        
+    </style>
+</head>
+<body>
+    <h1 class="success-message">Payment Successful!</h1>
+
+    <p class="quote">
+        "Books open doors to endless lives and boundless adventures. Visit us at 
+        <a href="{% url 'hmpage' %}" style="
+            text-decoration: none; 
+            color: white; 
+            font-size: 1.1rem; 
+            border: 2px solid #d84315; 
+            background-color: #d84315; 
+            padding: 5px 10px; 
+            border-radius: 5px;">DebSu Lit</a> 
+        to explore your next journey!"
+    </p>
+    <div class="animation">✨ Payment Processed Smoothly ✨</div>
+
+    
+</body>
+</html>

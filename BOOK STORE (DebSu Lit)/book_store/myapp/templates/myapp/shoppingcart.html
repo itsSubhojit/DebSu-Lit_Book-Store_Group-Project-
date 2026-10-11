@@ -1,0 +1,80 @@
+{% load static %}
+{% include './header.html' %}
+
+<link rel="stylesheet" href="{% static 'myapp/css/shoppingcart.CSS' %}">
+<title>SHOPPING CART</title>
+</head>
+<body>
+    <br><br><br>
+    <div class="home-button">
+        <a href="{% url 'hmpage' %}"><button class="btn btn-secondary"><i class="fas fa-home"></i> Home</button></a>
+    </div>
+    
+    <h2>SHOPPING CART</h2>
+
+    <div class="cart-item">
+        <div class="item-details">
+            <span class="item-title">Messi:A Biography (Paperback)</span>
+            <span class="item-price">$699</span>
+            <span>SIZE | 36</span>
+            <span>COLOR | WHITE</span>
+        </div>
+        <div class="quantity">
+            <button>-</button>
+            <span>1</span>
+            <button>+</button>
+        </div>
+    </div>
+
+    <div class="cart-item">
+        <div class="item-details">
+            <span class="item-title">CAMILLE HENROT ARTWORK SHIRT</span>
+            <span class="item-price">1.250,00€</span>
+            <span>SIZE | 36</span>
+            <span>COLOR | BLACK</span>
+        </div>
+        <div class="quantity">
+            <button>-</button>
+            <span>3</span>
+            <button>+</button>
+        </div>
+    </div>
+
+    <div class="cart-item">
+        <div class="item-details">
+            <span class="item-title">CAMILLE HENROT ARTWORK TOP</span>
+            <span class="item-price">495,00€</span>
+            <span>SIZE | 36</span>
+            <span>COLOR | BLACK</span>
+        </div>
+        <div class="quantity">
+            <button>-</button>
+            <span>2</span>
+            <button>+</button>
+        </div>
+    </div>
+
+    <div class="order-summary">
+        <h3>ORDER SUMMARY</h3>
+        <div class="summary-item">
+            <span>Subtotal</span>
+            <span>5.890,00€</span>
+        </div>
+        <div class="summary-item">
+            <span>Shipping</span>
+            <span>Free</span>
+        </div>
+        <div class="summary-item">
+            <span>Postage</span>
+            <span>24,00€</span>
+        </div>
+        <div class="summary-item" style="font-weight: bold;">
+            <span>Total</span>
+            <span>5.914,00€</span>
+        </div>
+    </div>
+    <div class="checkout">Check Out</div></div>
+    
+</div>
+
+{% include './footer.html' %}

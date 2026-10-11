@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 04, 2025 at 09:26 AM
+-- Generation Time: Oct 11, 2026 at 09:55 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -291,7 +291,8 @@ CREATE TABLE `django_session` (
 --
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
-('3t23gdge63higw0xzaqwtw03bb8saqev', '.eJxVjDsOwjAQBe_iGln-r0xJzxksr9eLA8iR4qRC3B0ipYD2zcx7iZS3taVt1CVNJM7CiNPvhrk8at8B3XO_zbLMfV0mlLsiDzrkdab6vBzu30HLo33rSMAQrVG6alXIEANo4gAhOgUVi2LrGZxRzhsCGw0yeh0sRYtMWbw_0xU3rA:1uBThT:tYi3X_lYBbUz2mn2mTNwkoEqGxYVTSXJzoF_EtUkzTQ', '2025-05-18 07:23:47.025205');
+('1e7p74s1fvo1wydf39uqjsikwxakc4se', '.eJxVjDsOwjAQBe_iGln-r0xJzxksr9eLA8iR4qRC3B0ipYD2zcx7iZS3taVt1CVNJM7CiNPvhrk8at8B3XO_zbLMfV0mlLsiDzrkdab6vBzu30HLo33rSMAQrVG6alXIEANo4gAhOgUVi2LrGZxRzhsCGw0yeh0sRYtMWbw_0xU3rA:1uERyx:3cfz5HsyGdV7Orx2gwwA8HgHCn76FkM5ni03nJherBM', '2025-05-26 12:10:07.005202'),
+('b9k74c3379x07fblmfmixmo2ia0qq7uv', '.eJxVjL0OwyAQg9-FuUIQjr-O3fMM6A5ISVsRKSRT1XcvkTK03uzP9psF3LcS9pbXMCd2ZYZdfjPC-Mz1AOmB9b7wuNRtnYkfFX7Sxscl5dft7P4dFGylr2Gg7H1UgKCSyF7qbsmaFB0ImDwNVnTrJmc8aKclKJLKyihNFyL7fAHNgTbQ:1xFoDy:HgYZaMznnB6_VkSHh1630rRDC8spaDcs7Q47g6KImJA', '2026-10-25 07:44:02.003279');
 
 -- --------------------------------------------------------
 
@@ -362,10 +363,11 @@ CREATE TABLE `myapp_customuser` (
 
 INSERT INTO `myapp_customuser` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`, `mobile`) VALUES
 (1, 'pbkdf2_sha256$600000$BNMLydnewsX6dxhHwwNrwm$PaDaNyNsC7fDmqsMEKJxo1MFJdnJUlsAaRac8kbm1CE=', NULL, 0, 'subhojit', 'subhojit', 'chakraborty', 'debansuguho@gmail.com', 0, 1, '2025-03-22 08:41:20.692333', '945687231'),
-(2, 'pbkdf2_sha256$600000$DS2XchVJoCndgbeZDP2k0M$AjWzOVsoKGvdUwtyqpIyZUR7Ty62usDkV481dH4NW8g=', '2025-05-04 07:23:47.023041', 0, 'abhi', 'Abhi', 'Chakraborty', 'abhi@gmail.com', 0, 1, '2025-03-22 08:51:10.369076', '953217865'),
+(2, 'pbkdf2_sha256$600000$DS2XchVJoCndgbeZDP2k0M$AjWzOVsoKGvdUwtyqpIyZUR7Ty62usDkV481dH4NW8g=', '2025-05-12 12:10:06.997613', 0, 'abhi', 'Abhi', 'Chakraborty', 'abhi@gmail.com', 0, 1, '2025-03-22 08:51:10.369076', '953217865'),
 (3, 'pbkdf2_sha256$600000$AMmWcXjlCcT1q2ZoqcHf4R$ztMaerMaOAsjmoQWJJorg5daz3Q+xCR8L0D4Y4hjIHQ=', NULL, 0, 'aniket', 'aniket', 'roy', 'aniketroy@gmail.com', 0, 1, '2025-03-27 17:15:54.663098', '9876543210'),
 (4, 'pbkdf2_sha256$600000$BfII8p5Ft3C12kmNbwiqfs$u6cB/7pEOWVYHCKyYJCSIiS6l5EBVUH2OVMeaHpe6FQ=', '2025-03-31 10:01:20.266301', 0, 'manish', 'manish', 'das', 'manish@gmail.com', 0, 1, '2025-03-31 10:00:55.780753', '7856942310'),
-(5, 'pbkdf2_sha256$600000$tncrFUTT9lcrqDu4gJIBmm$ukUwzaGf01JfzhEkq7I+qf0vizyDS2QWt7H30Dwx8Bo=', '2025-04-21 10:04:05.890880', 1, 'admin', '', '', 'admin@gmail.com', 1, 1, '2025-04-02 14:22:34.346082', '');
+(5, 'pbkdf2_sha256$600000$tncrFUTT9lcrqDu4gJIBmm$ukUwzaGf01JfzhEkq7I+qf0vizyDS2QWt7H30Dwx8Bo=', '2025-05-12 12:09:39.969072', 1, 'admin', '', '', 'admin@gmail.com', 1, 1, '2025-04-02 14:22:34.346082', ''),
+(6, 'pbkdf2_sha256$600000$xagnCOZFKx3yKKfXkAXV1D$dq/bVHugNGZvISy+z2PLswq27gNLMXYlfZeztnthE/Q=', '2026-10-11 07:44:01.984737', 0, 'subhojit7', 'subhojit', 'Chakraborty', 'debansuguho@gmail.com', 0, 1, '2026-10-11 07:25:49.520981', '945687231');
 
 -- --------------------------------------------------------
 
@@ -464,7 +466,12 @@ INSERT INTO `myapp_order` (`id`, `quantity`, `date_ordered`, `payment_status`, `
 (5, 1, '2025-04-12 14:47:30.861704', 'success', '', '', 12, 2),
 (6, 1, '2025-04-12 14:57:27.385492', 'success', '', '', 10, 2),
 (7, 1, '2025-04-13 06:56:17.026928', 'success', '', 'hbbbb74/5', 18, 2),
-(8, 1, '2025-04-17 15:43:33.883362', 'success', '', '', 9, 2);
+(8, 1, '2025-04-17 15:43:33.883362', 'success', '', '', 9, 2),
+(9, 1, '2025-05-12 12:08:08.816447', 'success', '', '', 7, 2),
+(10, 1, '2026-10-11 07:28:34.962552', 'success', '', '', 10, 6),
+(11, 1, '2026-10-11 07:32:54.065167', 'success', '', 'Kolkata Street Para, Kol-700001', 17, 6),
+(12, 1, '2026-10-11 07:46:00.280191', 'success', '', 'kolkata street para, kol-700001\n', 6, 6),
+(13, 1, '2026-10-11 07:46:00.297276', 'success', '', 'kolkata street para, kol-700001\n', 14, 6);
 
 -- --------------------------------------------------------
 
@@ -645,7 +652,7 @@ ALTER TABLE `django_migrations`
 -- AUTO_INCREMENT for table `myapp_cartitem`
 --
 ALTER TABLE `myapp_cartitem`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `myapp_category`
@@ -657,7 +664,7 @@ ALTER TABLE `myapp_category`
 -- AUTO_INCREMENT for table `myapp_customuser`
 --
 ALTER TABLE `myapp_customuser`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `myapp_customuser_groups`
@@ -681,7 +688,7 @@ ALTER TABLE `myapp_item`
 -- AUTO_INCREMENT for table `myapp_order`
 --
 ALTER TABLE `myapp_order`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `myapp_student`

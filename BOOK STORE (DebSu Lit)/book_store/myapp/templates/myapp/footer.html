@@ -1,0 +1,60 @@
+{% load static %}
+<footer>
+    <div class="footer_main">
+
+        <div class="tag">
+            <img src="{% static 'myapp/images/DebSu Lit logo.png' %}">
+            <p>
+                Whether you're a lifelong book lover or just starting your literary adventure, Debsu Lit is here to support your passion for reading and help you discover new worlds, one book at a time.
+            </p>
+
+        </div>
+
+        <div class="tag">
+            <h1>Quick Link</h1>
+            <a href="{% url 'hmpage' %}"><i class="fas fa-arrow-circle-left">Home</i></a>
+            <a href="{% url 'aboutpage' %}"><i class="fas fa-arrow-circle-left">About</i></a>
+            {% for category in categories %}
+            <a href="/arrivals/{{category.id}}"><i class="fas fa-arrow-circle-left">{{ category.cat_name }}</i></a>
+            {% endfor %}
+        </div>
+
+        <div class="tag">
+            <h1>Contact Info</h1>
+            <a href="#"><i class="fas fa-phone-square-alt"></i>+94 12 345 6789</a>
+            <a href="#"><i class="fas fa-phone-square-alt"></i>+94 32 444 699</a>
+            <a href="#"><i class="fas fa-envelope"></i>DebSu Lit@gmail.com</a>
+            
+        </div>
+
+        <div class="tag">
+            <h1>Follow Us</h1>
+            <div class="social_link">
+                <i class="fab fa-facebook"></i>
+                <i class="fab fa-instagram"></i>
+                <i class="fab fa-twitter"></i>
+                <i class="fab fa-linkedin"></i>
+            </div>
+            
+        </div>
+
+        <div class="tag">
+            <h1>Newsletter</h1>
+            <div class="search_bar">
+                <input type="text" placeholder="You email id here">
+                <button type="submit">Subscribe</button>
+            </div>                
+        </div>            
+        
+    </div>
+
+    <p class="end">Design By<span><i class="fa-solid fa-face-grin"></i>DebSu Lit</span></p>
+    <p class="end">Copyright © 2025 . DebSu Lit.com. All Rights Reserved</p>
+</footer>
+
+
+<script src="{% static 'myapp/js/jquery.min.js' %}"></script>
+<script src="{% static 'myapp/js/popper.min.js' %}"></script>
+<script src="{% static 'myapp/js/bootstrap.min.js' %}"></script>
+</body>
+</html>

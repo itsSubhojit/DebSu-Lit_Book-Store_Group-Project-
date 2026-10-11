@@ -1,0 +1,85 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Failed</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #ff4444, white); /* Warning red tones */
+            color: #2c2c2c;
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .failed-message {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 50px;
+            color: #b71c1c; /* Dark red for emphasis */
+        }
+
+        .quote {
+            font-size: 1.5rem;
+            font-style: italic;
+            margin: 20px 0;
+        }
+
+        .warning-animation {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 40px auto;
+            animation: shake 1s infinite;
+            color: black; /* Bold warning tone */
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .retry-button {
+            margin-top: 30px;
+            text-decoration: none;
+            color: white;
+            font-size: 1.1rem;
+            border: 2px solid #ff4444; /* Matches warning tones */
+            background-color: #ff4444;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .retry-button:hover {
+            background-color: #b71c1c; /* Dark red hover effect */
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="failed-message">Payment Failed!</h1>
+
+    <p class="quote">"Books open doors to endless lives and boundless adventures. Visit us at 
+        <a href="{% url 'hmpage' %}" style="
+            text-decoration: none; 
+            color: white; 
+            font-size: 1.1rem; 
+            border: 2px solid #b71c1c; 
+            background-color: #b71c1c; 
+            padding: 5px 10px; 
+            border-radius: 5px;">DebSu Lit</a> 
+        to explore your next journey!"
+    </p>
+
+    <div class="warning-animation">⚠️ Payment Could Not Be Processed ⚠️</div>
+
+    <a href="{% url 'retry_payment' %}" class="retry-button">Please Try Again</a>
+</body>
+</html>

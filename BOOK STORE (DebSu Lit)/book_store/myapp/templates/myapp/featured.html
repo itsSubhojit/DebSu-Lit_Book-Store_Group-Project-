@@ -1,0 +1,135 @@
+{% load static %}
+{% include './header.html' %}
+
+<link rel="stylesheet" href="{% static 'myapp/css/FRONT WEB PAGE.CSS' %}">
+<title>featuredbooks</title>
+    <div class="featured_boks">
+
+        <h1>Featured Books</h1>
+
+        <div class="featured_book_box">
+
+            <div class="featured_book_card">
+
+                <div class="featurde_book_img">
+                    <img src="{% static 'myapp/images/featuresbook1.jpg' %}">
+                </div>
+
+                <div class="featurde_book_tag">
+                    <h5>Ramayana</h5>
+                    <p class="writer"><b>Rishi Valmiki</b></p>
+                    <p class="book_price">₹1,200</p>
+                    <a href="{% static 'myapp/featuresbook1.html' %}" class="f_btn" target="_blank">Learn More</a>
+                </div>               
+
+            </div>
+
+            <div class="featured_book_card">
+
+                <div class="featurde_book_img">
+                    <img src="{% static 'myapp/images/featuresbook2.jpg' %}">
+                </div>
+
+                <div class="featurde_book_tag">
+                    <h5>Forensic Science</h5>
+                    <p class="writer"><b>Prof. Anu Singhala</b></p>
+                    <p><strong>Price:</strong> <del>₹595</del> <strong>₹488 (-18%)</strong></p>
+                    <a href="featuresbook2.html" class="f_btn" target="_blank">Learn More</a>
+                </div>               
+
+            </div>
+
+            <div class="featured_book_card">
+
+                <div class="featurde_book_img">
+                    <img src="{% static 'myapp/images/featuresbook3.jpg' %}">
+                </div>
+
+                <div class="featurde_book_tag">
+                    <h5>Messi: A Biography</h5>
+                   <p>Leonardo Faccio</p> 
+                   <p><strong>Price:</strong> <del>₹999</del> <strong>₹619 (-38%)</strong></p>
+                    <a href="featuresbook3.html" class="f_btn" target="_blank">Learn More</a>
+                </div>               
+
+            </div>
+
+            <div class="featured_book_card">
+
+                <div class="featurde_book_img">
+                    <img src="{% static 'myapp/images/featuresbook4.jpg' %}">
+                </div>
+
+                <div class="featurde_book_tag">
+                    <h5>108 Panchatantra Story Book for Kids (Hindi)</h5>
+                    <p class="writer">Maple Press</p>
+                    <p><strong>Price:</strong> <del>₹180</del> <strong>₹108 (-40%)</strong></p>
+                    <a href="featuresbook4.html" class="f_btn" target="_blank">Learn More</a>
+                </div>               
+
+            </div>
+
+            <div class="featured_book_card">
+
+                <div class="featurde_book_img">
+                    <img src="{% static 'myapp/images/featuresbook5.jpg' %}">
+                </div>
+
+                <div class="featurde_book_tag">
+                    <h5>বিক্রম বেতালের প্রসিদ্ধ কাহিনী</h5>
+                    <p class="writer">Priyanka Verma</p>
+                    <p><strong>Price:</strong> ₹1,060</p>
+                    <a href="featuresbook5.html" class="f_btn" target="_blank">Learn More</a>
+                </div>               
+
+            </div>
+            
+            <div class="featured_book_card">
+
+                <div class="featurde_book_img">
+                    <img src="{% static 'myapp/images/featuresbook6.jpg' %}">
+                </div>
+
+                <div class="featurde_book_tag">
+                    <h5>ঈশপের নৈতিক কাহিনী</h5>
+                    <p class="writer">Prakash Manu</p>
+                    <p><strong>Price:</strong> <del>₹1,129</del> <strong>₹1,016 (-10%)</strong></p>
+                    <a href="featuresbook6.html" class="f_btn" target="_blank">Learn More</a>
+                </div>               
+
+            </div>
+
+            <div class="featured_book_card">
+
+                <div class="featurde_book_img">
+                    <img src="{% static 'myapp/images/featuresbook7.jpg' %}">
+                </div>
+
+                <div class="featurde_book_tag">
+                    <h5>মহাভারত</h5>
+                    <p class="writer">Priyadarshi Prakash</p>
+                    <p><strong>Price:</strong> <del>₹1,468</del> <strong>₹1,307 (-11%)</strong></p>
+                    <a href="featuresbook7.html" class="f_btn" target="_blank">Learn More</a>
+                </div>               
+
+            </div>
+
+            <div class="featured_book_card">
+
+                <div class="featurde_book_img">
+                    <img src="{% static 'myapp/images/featuresbook8.jpg' %}">
+                </div>
+
+                <div class="featurde_book_tag">
+                    <h5>You're 18! Now What?</h5>
+                    <p class="writer">Catherine Gilstein</p>
+                    <p><strong>Price:</strong> <del>₹2,376</del> <strong>₹1,663 (-30%)</strong></p>
+                    <a href="featuresbook8.html" class="f_btn" target="_blank">Learn More</a>
+                </div>               
+
+            </div>
+        </div>        
+     </div> 
+
+
+{% include './footer.html' %}

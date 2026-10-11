@@ -1,0 +1,79 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+}
+header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    margin: 0;
+}
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
+}
+.cart-item {
+    background: white;
+    margin: 10px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.item-details {
+    display: flex;
+    flex-direction: column;
+}
+.item-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+.item-price {
+    font-size: 16px;
+    color: #555;
+}
+.quantity {
+    display: flex;
+    align-items: center;
+}
+.quantity span {
+    margin: 0 10px;
+}
+.checkout {
+    margin-top: 30px;
+    padding: 15px;
+    background: black;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+}
+.order-summary {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.order-summary h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}

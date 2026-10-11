@@ -1,0 +1,30 @@
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'myapp/css/signup.css' %}">
+<title>SIGNUP</title>
+
+</head>
+<body>
+    <div class="signup_form">
+        <form method="post" >
+          {% csrf_token %}
+          <h3>Sign Up</h3>
+         {% for f in frm %}
+          <div class="input_box">
+           {{f.label}}
+           {{f}}
+           {{f.errors | striptags}}
+          </div>
+          {% endfor %}  
+          
+          <button type="submit">Sign Up</button>
+          <p class="login_link">Already have an account? <a href="{% url 'loginpage' %}" target="_blank">Log In</a></p>
+        </form>
+        {% if messages  %}
+        {% for msg in messages %}
+        {{msg}}
+        {% endfor %}
+        {% endif %}
+
+      </div>

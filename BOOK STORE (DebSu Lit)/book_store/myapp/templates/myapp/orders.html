@@ -1,0 +1,44 @@
+{% load static %}
+{% include './header.html' %}
+
+
+<link rel="stylesheet" href="{% static 'myapp/css/orders.css' %}">
+<title>ORDERS PAGE</title>
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Previous Orders -->
+    <h2>Previous Orders</h2>
+    <div class="order-card">
+        <div class="order-header">
+            <span>Order #562358358</span>
+            <span>Status: Delivered</span>
+        </div>
+        <div class="order-details">
+            <p>Delivered Date: 28th November 2020</p>
+            <p>Product: SN20</p>
+        </div>
+        <div class="order-buttons">
+            <button>Track Parcel</button>
+            <button>View Order</button>
+        </div>
+    </div>
+
+    <!-- Present Orders -->
+    <h2>Present Orders</h2>
+    <div class="order-card">
+        <div class="order-header">
+            <span>Order #862682274</span>
+            <span>Status: In Progress</span>
+        </div>
+        <div class="order-details">
+            <p>Estimated Delivery: 9th September 2023</p>
+            <p>Product: Sunglasses</p>
+        </div>
+        <div class="order-buttons">
+            <button onclick="confirmOrder()"><a href="OrderConformation.html">Order Confirmation</a></button>
+            <button onclick="cancelOrder()"><a href="CancelOrder.html">Cancel Order</a></button>
+        </div>
+    </div>
+</div>
+
+{% include './footer.html' %}

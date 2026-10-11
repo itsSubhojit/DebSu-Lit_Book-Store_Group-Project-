@@ -1,0 +1,30 @@
+.container {
+    margin-top: 50px;
+}
+.book-photo {
+    max-width: 100%;
+    height: auto;
+}
+.book-info {
+    margin-top: 20px;
+}
+.btn-group {
+    margin-top: 20px;
+}
+.about-book, .book-details {
+    margin-top: 40px;
+}
+.star-rating .fa {
+    color: gold;
+}
+.btn-group .btn {
+    margin-right: 10px; /* Adds space between buttons */
+}
+.summary-item {
+    margin-bottom: 20px; /* Adds space between summary items */
+}
+.home-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}

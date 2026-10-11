@@ -1,0 +1,129 @@
+{% load static %}
+{% include './header.html' %}
+
+
+<link rel="stylesheet" href="{% static 'myapp/css/FRONT WEB PAGE.CSS' %}">
+<title>Arrivals</title>
+<br><br>
+<div class="arrivals">
+    
+    <h1>BOOKS</h1>
+
+    <div class="arrivals_box">
+        {% for item in allItem %}
+        <div class="arrivals_card">
+            <div class="arrivals_image">
+                <img src="{{item.b_img.url}}">
+            </div>
+            <div class="arrivals_tag">
+                <h5>{{item.name}}</h5>
+                    <p class="book_price">{{item.price}}</p>
+                <a href="/featuresbook1/{{item.id}}" class="arrivals_btn" target="_blank">Grab Now</a>
+            </div>
+        </div>
+        {% endfor %}
+        <!-- <div class="arrivals_card">
+            <div class="arrivals_image">
+                <img src="{% static 'myapp/image/arrival_2.jpg' %}">
+            </div>
+            <div class="arrivals_tag">
+                <p>New Arrivals</p>
+                
+                <a href="arrivalsbook2.html" class="arrivals_btn" target="_blank">Learn More</a>
+            </div>
+        </div>
+
+        <div class="arrivals_card">
+            <div class="arrivals_image">
+                <img src="{% static 'myapp/image/arrival_3.jpg' %}">
+            </div>
+            <div class="arrivals_tag">
+                <p>New Arrivals</p>
+               
+                <a href="arrivalsbook3.html" class="arrivals_btn" target="_blank">Learn More</a>
+            </div>
+        </div>
+
+        <div class="arrivals_card">
+            <div class="arrivals_image">
+                <img src="{% static 'myapp/image/arrival_4.jpg' %}">
+            </div>
+            <div class="arrivals_tag">
+                <p>New Arrivals</p>
+                
+                <a href="arrivalsbook4.html" class="arrivals_btn" target="_blank">Learn More</a>
+            </div>
+        </div>
+
+        <div class="arrivals_card">
+            <div class="arrivals_image">
+                <img src="{% static 'myapp/image/arrival_5.jpg' %}">
+            </div>
+            <div class="arrivals_tag">
+                <p>New Arrivals</p>
+               
+                <a href="arrivalsbook5.html" class="arrivals_btn" target="_blank">Learn More</a>
+            </div>
+        </div>
+
+        <div class="arrivals_card">
+            <div class="arrivals_image">
+                <img src="{% static 'myapp/images/arrivalbook6.jpg' %}">
+            </div>
+            <div class="arrivals_tag">
+                <p>New Arrivals</p>
+                
+                <a href="arrivalsbook6.html" class="arrivals_btn" target="_blank">Learn More</a>
+            </div>
+        </div>
+
+        <div class="arrivals_card">
+            <div class="arrivals_image">
+                <img src="{% static 'myapp/images/arrivalbook7.jpg' %}">
+            </div>
+            <div class="arrivals_tag">
+                <p>New Arrivals</p>
+                
+                <a href="arrivalsbook7.html" class="arrivals_btn" target="_blank">Learn More</a>
+            </div>
+        </div>
+
+        <div class="arrivals_card">
+            <div class="arrivals_image">
+                <img src="{% static 'myapp/image/arrival_8.webp' %}">
+            </div>
+            <div class="arrivals_tag">
+                <p>New Arrivals</p>
+                
+                <a href="arrivalsbook8.html" class="arrivals_btn" target="_blank">Learn More</a>
+            </div>
+        </div>
+
+        <div class="arrivals_card">
+            <div class="arrivals_image">
+                <img src="{% static 'myapp/image/arrival_9.jpg' %}">
+            </div>
+            <div class="arrivals_tag">
+                <p>New Arrivals</p>
+                
+                <a href="arrivalsbook9.html" class="arrivals_btn" target="_blank">Learn More</a>
+            </div>
+        </div>
+
+        <div class="arrivals_card">
+            <div class="arrivals_image">
+                <img src="{% static 'myapp/images/arrivalbook10.jpg' %}">
+            </div>
+            <div class="arrivals_tag">
+                <p>New Arrivals</p>
+                
+                <a href="arrivalsbook10.html" class="arrivals_btn" target="_blank">Learn More</a>
+            </div>
+        </div> -->
+
+    </div>
+
+</div>
+<br><br><br>
+
+{% include './footer.html' %}

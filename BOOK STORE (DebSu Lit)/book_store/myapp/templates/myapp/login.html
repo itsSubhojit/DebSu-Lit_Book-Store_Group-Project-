@@ -1,0 +1,49 @@
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'myapp/css/login.css' %}">
+<title>BOOK LOGIN PAGE</title>
+</head>
+<body>
+  
+  <div class="login_form">
+    <!-- Login form container -->
+    <form method="post">    
+      <h3>Log in with</h3>
+      <div class="login_option">
+        <!-- Google button -->
+        <div class="option">
+          <a href="#">
+            <img src="{% static 'myapp/images/google logo.jpg' %}" alt="Google" />
+            <span>Google</span>
+          </a>
+        </div>
+        <!-- Apple button -->
+        <div class="option">
+          <a href="#">
+            <img src="{% static 'myapp/images/apple logo.jpg' %}" alt="Apple" />
+            <span>Apple</span>
+          </a>
+        </div>
+      </div>
+      <!-- Login option separator -->
+      <p class="separator">
+        <span>or</span>
+      </p>
+       {% csrf_token %}
+          {% for frm in form %}
+          <div class="input_box">
+            {{frm.label}}
+            {{frm}}
+          </div>
+          {% endfor %}
+           <!-- Login button -->
+          <button type="submit">Log In</button>
+          <p class="sign_up">Don't have an account? <a href="{% url 'signuppage' %}" target="_blank">Sign up</a></p>
+        </form>
+        {% if form.non_fields_errors %}
+         {% for err in form.non_fields_errors %}
+           <p>{{err}}</p>
+         {% endfor %}
+        {% endif %}
+      </div>
