@@ -30,7 +30,7 @@
 ### 📁 Directory Structure
 
 ```text
-DebSu-Lit_Book-Store_Group-Project-/
+DebSu-Lit_Book-Store_Group-Project/
 ├── Assets/
 │   └── diagram.png                # System Architecture & Flow Diagram
 ├── BOOK STORE (DebSu Lit)/
@@ -67,8 +67,8 @@ Ensure you have the following installed on your machine:
 
 ### 2. Clone Repository & Setup Environment
 ```bash
-git clone https://github.com/itsSubhojit/DebSu-Lit_Book-Store_Group-Project-.git
-cd DebSu-Lit_Book-Store_Group-Project-
+git clone https://github.com/itsSubhojit/DebSu-Lit_Book-Store_Group-Project.git
+cd DebSu-Lit_Book-Store_Group-Project
 ```
 
 
