@@ -1,85 +1,44 @@
 {% load static %}
+{% include './header.html' %}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Payment Failed</title>
-    <style>
-        body {
-            background: linear-gradient(to right, #ff4444, white); /* Warning red tones */
-            color: #2c2c2c;
-            font-family: 'Roboto', sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
+<main class="dsl-container">
+    <div class="dsl-status-page">
+        <!-- Coral Red Failure Badge with Cross -->
+        <div class="dsl-status-icon failure">
+            <i class="fas fa-times"></i>
+        </div>
 
-        .failed-message {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-top: 50px;
-            color: #b71c1c; /* Dark red for emphasis */
-        }
+        <span class="dsl-status-kicker failure">Payment Unsuccessful</span>
+        <h1 class="dsl-status-title">We couldn't process your payment.</h1>
 
-        .quote {
-            font-size: 1.5rem;
-            font-style: italic;
-            margin: 20px 0;
-        }
+        <p class="dsl-status-desc">
+            Your transaction was not completed. If any funds were deducted, Razorpay issues an automatic refund back to your payment method within 5–7 business days.
+        </p>
 
-        .warning-animation {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin: 40px auto;
-            animation: shake 1s infinite;
-            color: black; /* Bold warning tone */
-        }
+        <!-- Information Card -->
+        <div class="dsl-status-card">
+            <div class="dsl-status-row">
+                <span class="dsl-status-row-label">Cart Status</span>
+                <span class="dsl-status-row-val text-primary">
+                    <i class="fas fa-shopping-bag"></i> Your selected books are safe in your cart
+                </span>
+            </div>
+            <div class="dsl-status-row">
+                <span class="dsl-status-row-label">Suggested Action</span>
+                <span class="dsl-status-row-val">Check UPI app, card limits, or retry checkout</span>
+            </div>
+        </div>
 
-        @keyframes shake {
-            0%, 100% {
-                transform: translateX(0);
-            }
-            25% {
-                transform: translateX(-5px);
-            }
-            75% {
-                transform: translateX(5px);
-            }
-        }
+        <!-- Action CTAs -->
+        <div class="dsl-status-actions">
+            <a href="{% url 'view_cart' %}" class="dsl-btn-primary">
+                Return to cart
+            </a>
+            <a href="{% url 'hmpage' %}" class="dsl-btn-secondary">
+                Back to home
+            </a>
+        </div>
+    </div>
+</main>
 
-        .retry-button {
-            margin-top: 30px;
-            text-decoration: none;
-            color: white;
-            font-size: 1.1rem;
-            border: 2px solid #ff4444; /* Matches warning tones */
-            background-color: #ff4444;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-
-        .retry-button:hover {
-            background-color: #b71c1c; /* Dark red hover effect */
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <h1 class="failed-message">Payment Failed!</h1>
-
-    <p class="quote">"Books open doors to endless lives and boundless adventures. Visit us at 
-        <a href="{% url 'hmpage' %}" style="
-            text-decoration: none; 
-            color: white; 
-            font-size: 1.1rem; 
-            border: 2px solid #b71c1c; 
-            background-color: #b71c1c; 
-            padding: 5px 10px; 
-            border-radius: 5px;">DebSu Lit</a> 
-        to explore your next journey!"
-    </p>
-
-    <div class="warning-animation">⚠️ Payment Could Not Be Processed ⚠️</div>
-
-    <a href="{% url 'retry_payment' %}" class="retry-button">Please Try Again</a>
-</body>
-</html>
+{% include './footer.html' %}

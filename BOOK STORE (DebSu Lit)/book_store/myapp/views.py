@@ -1,4 +1,5 @@
 import logging
+import re
 import time
 import razorpay
 import razorpay.errors
@@ -7,9 +8,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from . forms import MyRegFrm, StdRegFrm, MyChngFrm
-from . models import Student, Category, Item, CartItem, Order
+from . models import CustomUser, Student, Category, Item, CartItem, Order
 from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
@@ -29,41 +30,78 @@ def about(request):
 
 def useraccount(request):
     categories = Category.objects.all().order_by('cat_name')
-    allItem=Item.objects.all()
-    if request.user.is_authenticated:
-        if request.POST:
-            form = MyChngFrm(request.POST, instance=request.user)
-            if form.is_valid():
-                try:
-                    form.save()
-                    messages.success(request,'Profile Update successfully')
-                except Exception:
-                    logger.exception("Failed to update profile for user %s", request.user.username)
-                    messages.error(request, 'Profile Could Not Update successfully')
-        else:
-            form=MyChngFrm(instance=request.user)
-        return render(request, 'myapp/useraccount.html', {'form':form, 'allItem':allItem, 'categories':categories})
-    else:
+    allItem = Item.objects.all()
+    if not request.user.is_authenticated:
         return redirect('/login')
+
+    if request.method == "POST":
+        current_password = request.POST.get('current_password', '')
+        if not current_password or not request.user.check_password(current_password):
+            messages.error(request, 'Incorrect account password. You must confirm your current password to save profile changes.')
+            form = MyChngFrm(instance=request.user)
+            return render(request, 'myapp/useraccount.html', {'form': form, 'allItem': allItem, 'categories': categories})
+
+        form = MyChngFrm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            try:
+                new_password = request.POST.get('new_password', '').strip()
+                confirm_new_password = request.POST.get('confirm_new_password', '').strip()
+                if new_password:
+                    if new_password != confirm_new_password:
+                        messages.error(request, 'New password and confirmation do not match.')
+                        return render(request, 'myapp/useraccount.html', {'form': form, 'allItem': allItem, 'categories': categories})
+                    if len(new_password) < 8 or not re.search(r'[A-Z]', new_password) or not re.search(r'[a-z]', new_password) or not re.search(r'[0-9]', new_password) or not re.search(r'[@$!%*?&#^()_+=\-{}\[\]:;"\'<>,./]', new_password):
+                        messages.error(request, 'New password must have at least 8 characters, an uppercase letter, a lowercase letter, a number, and a special character.')
+                        return render(request, 'myapp/useraccount.html', {'form': form, 'allItem': allItem, 'categories': categories})
+                    request.user.set_password(new_password)
+
+                user = form.save()
+                if new_password:
+                    update_session_auth_hash(request, user)
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('/useraccount')
+            except Exception:
+                logger.exception("Failed to update profile for user %s", request.user.username)
+                messages.error(request, 'Profile could not be updated. Please check the entered details.')
+        else:
+            try:
+                request.user.refresh_from_db()
+            except Exception:
+                pass
+            messages.error(request, 'Please correct the errors in the form.')
+    else:
+        form = MyChngFrm(instance=request.user)
+
+    return render(request, 'myapp/useraccount.html', {'form': form, 'allItem': allItem, 'categories': categories})
 
 
 def signIn(request):
     if request.user.is_authenticated:
         return redirect('/useraccount')
-    else:
-        if request.POST:
-            form=AuthenticationForm(request=request, data=request.POST)
-            if form.is_valid():
-                uname=form.cleaned_data['username']
-                upass=form.cleaned_data['password']
-                user=authenticate(username=uname, password=upass)
-                if user is not None:
-                    login(request, user)
-                    return redirect('/useraccount')
+
+    if request.method == "POST":
+        login_id = request.POST.get('username', '').strip()
+        upass = request.POST.get('password', '')
+
+        user_obj = None
+        # Support login using email as well as username
+        if '@' in login_id:
+            user_match = CustomUser.objects.filter(email__iexact=login_id).first()
+            if user_match:
+                user_obj = authenticate(username=user_match.username, password=upass)
+        if not user_obj:
+            user_obj = authenticate(username=login_id, password=upass)
+
+        if user_obj is not None:
+            login(request, user_obj)
+            messages.success(request, f"Welcome back, {user_obj.first_name or user_obj.username}!")
+            return redirect('/useraccount')
         else:
-            form=AuthenticationForm()
-        context={"form":form}
-        return render(request, 'myapp/login.html', context)
+            messages.error(request, "Invalid username/email or password.")
+            return render(request, 'myapp/login.html', {'login_id': login_id})
+
+    return render(request, 'myapp/login.html')
+
 
 def signOut(request):
     logout(request)
@@ -71,21 +109,61 @@ def signOut(request):
 
 
 def signup(request):
-    if request.POST:
-        form=MyRegFrm(data=request.POST)
-        if form.is_valid:
+    if request.method == "POST":
+        form = MyRegFrm(data=request.POST)
+        if form.is_valid():
             try:
                 form.save()
-                messages.success(request, 'Your registration is succesfull')
+                messages.success(request, 'Account created successfully! Please sign in with your credentials.')
+                return redirect('/login')
             except Exception:
                 logger.exception("Failed to save new user registration")
-                messages.error(request, 'Your registration is not successfull')
+                messages.error(request, 'Registration could not be completed. Please try again.')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
-        form=MyRegFrm()
-    context={'frm':form}
-    return render(request, 'myapp/signup.html', context)
+        form = MyRegFrm()
+
+    return render(request, 'myapp/signup.html', {'frm': form})
+
 
 def forgotpassword(request):
+    if request.method == "POST":
+        identity = request.POST.get('identity', '').strip()
+        mobile = request.POST.get('mobile', '').strip()
+        new_password = request.POST.get('new_password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+
+        # Find user by username or email
+        user_match = None
+        if '@' in identity:
+            user_match = CustomUser.objects.filter(email__iexact=identity).first()
+        if not user_match:
+            user_match = CustomUser.objects.filter(username__iexact=identity).first()
+
+        if not user_match:
+            messages.error(request, 'No registered account found with that username or email.')
+            return render(request, 'myapp/forgotpassword.html', {'identity': identity, 'mobile': mobile})
+
+        if user_match.mobile != mobile:
+            messages.error(request, 'The mobile number provided does not match our records for this account.')
+            return render(request, 'myapp/forgotpassword.html', {'identity': identity, 'mobile': mobile})
+
+        if new_password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+            return render(request, 'myapp/forgotpassword.html', {'identity': identity, 'mobile': mobile})
+
+        # Validate password strength: min 8 chars, uppercase, lowercase, number, special char
+        if len(new_password) < 8 or not re.search(r'[A-Z]', new_password) or not re.search(r'[a-z]', new_password) or not re.search(r'[0-9]', new_password) or not re.search(r'[@$!%*?&#^()_+=\-{}\[\]:;"\'<>,./]', new_password):
+            messages.error(request, 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (e.g. @User123).')
+            return render(request, 'myapp/forgotpassword.html', {'identity': identity, 'mobile': mobile})
+
+        # Update password
+        user_match.set_password(new_password)
+        user_match.save()
+        messages.success(request, 'Your password has been reset successfully! Please log in with your new password.')
+        return redirect('/login')
+
     return render(request, 'myapp/forgotpassword.html')
 
 def orders(request):
@@ -165,8 +243,12 @@ def view_cart(request):
     if request.user.is_authenticated:
           cart_items = CartItem.objects.filter(user=request.user)
           total_price = sum(int(item.item.price) * int(item.quantity) for item in cart_items)
-          total_price=int(total_price)
-          return render(request, 'myapp/cart.html', {'cart_items': cart_items, 'total_price': total_price})
+          total_price = int(total_price)
+          return render(request, 'myapp/cart.html', {
+              'cart_items': cart_items,
+              'total_price': total_price,
+              'saved_user': request.user
+          })
     else:
         return redirect('/login')
     
@@ -188,6 +270,28 @@ def initiate_payment(request):
         address = request.POST.get('address', '').strip()
         if not address:
             return JsonResponse({"error": "Delivery address is required."}, status=400)
+
+        # Optionally save address to user's profile if requested
+        if request.POST.get('save_to_profile') == 'true':
+            addr_line1 = request.POST.get('addr_line1', '').strip()
+            addr_line2 = request.POST.get('addr_line2', '').strip()
+            city = request.POST.get('addr_city', '').strip()
+            state = request.POST.get('addr_state', '').strip()
+            pincode = request.POST.get('addr_pincode', '').strip()
+            if addr_line1:
+                request.user.address_line1 = addr_line1
+            if addr_line2:
+                request.user.address_line2 = addr_line2
+            if city:
+                request.user.city = city
+            if state:
+                request.user.state = state
+            if pincode:
+                request.user.pincode = pincode
+            try:
+                request.user.save()
+            except Exception:
+                pass
 
         cart_items = CartItem.objects.filter(user=request.user)
         if not cart_items.exists():

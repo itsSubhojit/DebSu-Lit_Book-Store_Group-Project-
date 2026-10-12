@@ -1,21 +1,112 @@
 {% load static %}
 {% include './header.html' %}
 
-
-    <div class="about">
-   
-        <div class="about_image">
-            <img src="{% static 'myapp/image/about.png' %}" alt="About Us Image">
-        </div>
-        <div class="about_tag">
-            <h1>About Us</h1>
-            <p>
-                We pride ourselves on providing an exceptional shopping experience, tailored to your needs. Whether you're looking for personalized recommendations, seamless service, or exclusive deals, we are committed to making your journey through the world of books enjoyable and memorable. Our knowledgeable team is always here to assist you, ensuring that you discover the perfect book to suit your tastes.
-                <br><br>
-                Join us at Debsu Lit, and embark on a literary journey that will captivate your imagination and inspire your soul. Dive into the world of stories, explore new perspectives, and let the magic of books enrich your life. Together, let's celebrate the joy of reading and the endless possibilities it brings.
-            </p>
-        </div>
-    
+<!-- About Hero -->
+<section class="dsl-about-hero">
+    <div class="dsl-container dsl-about-hero-content">
+        <span class="dsl-about-kicker">Our Mission & Story</span>
+        <h1 class="dsl-about-hero-title">A Sanctuary for Words, Stories & Curious Readers</h1>
+        <p class="dsl-about-hero-subtitle">
+            DebSu Lit began with a simple belief: in an age of infinite scrolls, holding a thoughtfully chosen book is an irreplaceable joy.
+        </p>
     </div>
+</section>
+
+<!-- Narrative Section -->
+<section class="dsl-about-story-section">
+    <div class="dsl-container">
+        <div class="dsl-about-story-grid">
+            <!-- Left: Editorial Visual with Quote Overlay -->
+            <div class="dsl-about-visual-card">
+                <img src="{% static 'myapp/images/hero_reading.jpg' %}" alt="Quiet bookstore reading nook">
+                <div class="dsl-about-quote-overlay">
+                    <p>“We don’t stock thousands of algorithmic bestsellers. We curate stories that linger long after the final page.”</p>
+                </div>
+            </div>
+
+            <!-- Right: Our Story Narrative -->
+            <div class="dsl-about-narrative">
+                <h2 class="dsl-about-narrative-title">Curating with Purpose</h2>
+                <p class="dsl-about-paragraph">
+                    DebSu Lit is an independent online bookshop born from a deep love for Indian and global literature. We bridge timeless classics, vibrant regional translations, and transformative non-fiction, connecting discerning readers across India with books that truly matter.
+                </p>
+                <p class="dsl-about-paragraph">
+                    Whether you are immersing yourself in the epic philosophy of the Ramayana, tracing legal and scientific milestones, or seeking poetic inspiration for a quiet Sunday afternoon, we treat every order not simply as a parcel, but as a literary package delivered with genuine care.
+                </p>
+                <p class="dsl-about-paragraph">
+                    From handpicked inventory selection to seamless Razorpay payments and reliable doorstep delivery, our mission is to make book shopping feel warm, transparent, and celebratory.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values & Commitments Grid -->
+<section class="dsl-about-values-section">
+    <div class="dsl-container">
+        <div class="dsl-about-values-header">
+            <h2>The DebSu Lit Promise</h2>
+            <p>Every decision we make is guided by respect for literature and reader trust.</p>
+        </div>
+
+        <div class="dsl-about-values-grid">
+            <div class="dsl-about-value-card">
+                <div class="dsl-about-value-icon">
+                    <i class="fas fa-feather-alt"></i>
+                </div>
+                <h3 class="dsl-about-value-title">Handpicked Curation</h3>
+                <p class="dsl-about-value-desc">
+                    No automated churn. Every title on our shelves is chosen because of its voice, narrative depth, or enduring educational value.
+                </p>
+            </div>
+
+            <div class="dsl-about-value-card">
+                <div class="dsl-about-value-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h3 class="dsl-about-value-title">Safe Pan-India Transit</h3>
+                <p class="dsl-about-value-desc">
+                    Protective, eco-conscious packaging ensures your books arrive in pristine condition, with clean corners and crisp spines.
+                </p>
+            </div>
+
+            <div class="dsl-about-value-card">
+                <div class="dsl-about-value-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="dsl-about-value-title">Trusted Checkout</h3>
+                <p class="dsl-about-value-desc">
+                    Encrypted Razorpay checkout, clear tracking updates, and direct customer assistance whenever you need it.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Literary Quote Banner -->
+<section class="dsl-about-quote-banner">
+    <div class="dsl-container">
+        <blockquote class="dsl-about-quote-text">
+            “A room without books is like a body without a soul.”
+        </blockquote>
+        <div class="dsl-about-quote-author">— Marcus Tullius Cicero</div>
+    </div>
+</section>
+
+<!-- Bottom CTA -->
+<section class="dsl-about-cta-section">
+    <div class="dsl-container dsl-about-cta-content">
+        <h3>Ready to find your next great read?</h3>
+        <p>Explore our curated catalog across fiction, classics, science, and history.</p>
+        <div class="dsl-about-cta-actions">
+            <a href="{% url 'hmpage' %}" class="dsl-btn-primary">
+                Explore the collection <i class="fas fa-arrow-right"></i>
+            </a>
+            <a href="{% url 'view_cart' %}" class="dsl-btn-secondary">
+                View your cart
+            </a>
+        </div>
+    </div>
+</section>
 
 {% include './footer.html' %}

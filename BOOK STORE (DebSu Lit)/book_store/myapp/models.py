@@ -4,7 +4,19 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class CustomUser(AbstractUser):
-    mobile=models.CharField(max_length=10)
+    mobile = models.CharField(max_length=10)
+    profile_pic = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    address_line1 = models.CharField(max_length=255, null=True, blank=True)
+    address_line2 = models.CharField(max_length=255, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    pincode = models.CharField(max_length=10, null=True, blank=True)
+
+    @property
+    def full_address(self):
+        parts = [self.address_line1, self.address_line2, self.city, self.state, self.pincode]
+        valid_parts = [p.strip() for p in parts if p and p.strip()]
+        return ", ".join(valid_parts) if valid_parts else ""
 
 
 class Student(models.Model):

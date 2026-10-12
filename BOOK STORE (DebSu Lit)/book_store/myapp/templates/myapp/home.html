@@ -1,363 +1,162 @@
 {% load static %}
 {% include './header.html' %}
 
-<!--body-->
+<main class="dsl-container">
 
-<div class="main">
-
-    <div class="main_tag">
-        <h1>WELCOME TO<br><span>BOOK STORE</span></h1>
-
-        <p>
-            "DebSu Lit is more than just a bookstore – it's a dream realized. Born out of a shared passion for literature and learning, our store is a labor of love, crafted with care and dedication. We're Debansu and Subhojit, two book enthusiasts who wanted to create a space where readers could come together, share ideas, and explore the infinite possibilities of the written word. Join us on this journey, and let's get lost in the magic of books together!"
-        </p>
-        
-
-    </div>
-
-    <div class="main_img">
-        <img src="{% static 'myapp/image/table.png' %}">
-    </div>
-
-</div>
-
-</section>
-
-
-
-    <!--Services-->
-
-    <div class="services">
-
-        <div class="services_box">
-
-            <div class="services_card">
-                <i class="fas fa-truck"></i>
-                <h3>Fast Delivery</h3>
-                <p>
-                    "Speedy delivery, right to your doorstep!"
+    <!-- ==================== EDITORIAL HERO SECTION ==================== -->
+    <section class="dsl-hero">
+        <div class="dsl-hero-grid">
+            <!-- Left: Headline, Actions & Stats -->
+            <div class="dsl-hero-content">
+                <span class="dsl-kicker">Books Worth Keeping</span>
+                <h1 class="dsl-hero-title">Stories that stay with you.</h1>
+                <p class="dsl-hero-desc">
+                    Discover beloved voices from India and the world, handpicked for curious readers. From captivating fiction to historical epics and timeless classics.
                 </p>
+                <div class="dsl-hero-actions">
+                    <a href="#catalog" class="dsl-btn-primary">
+                        Explore the collection <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="{% url 'aboutpage' %}" class="dsl-btn-secondary">
+                        Our story
+                    </a>
+                </div>
+
+                <!-- Editorial Stats Row (Figma) -->
+                <div class="dsl-hero-stats">
+                    <div class="dsl-stat-item">
+                        <span class="dsl-stat-number">1,200+</span>
+                        <span class="dsl-stat-label">Curated titles</span>
+                    </div>
+                    <div class="dsl-stat-divider"></div>
+                    <div class="dsl-stat-item">
+                        <span class="dsl-stat-number">4.9/5</span>
+                        <span class="dsl-stat-label">Reader rating</span>
+                    </div>
+                    <div class="dsl-stat-divider"></div>
+                    <div class="dsl-stat-item">
+                        <span class="dsl-stat-number">Pan-India</span>
+                        <span class="dsl-stat-label">Delivery</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="services_card">
-                <i class="fab fa-intercom"></i>
-                <h3>24 x 7 Services</h3>
-                <p>
-                    "Round-the-clock service, anytime you need us!"
-                </p>
+            <!-- Right: Editorial Bookstore Visual with Floating Card -->
+            <div class="dsl-hero-visual-wrapper">
+                <div class="dsl-hero-visual">
+                    <img src="{% static 'myapp/images/hero_reading.jpg' %}" alt="Cozy reading room at DebSu Lit" class="dsl-hero-img" loading="eager">
+                    <div class="dsl-floating-badge">
+                        <span class="dsl-floating-kicker">This Month's Shelf</span>
+                        <h4 class="dsl-floating-title">Women in translation</h4>
+                    </div>
+                </div>
             </div>
-
-            <div class="services_card">
-                <i class="fas fa-tag"></i>
-                <h3>Best Deal</h3>
-                <p>
-                    "Unbeatable deals, every time you shop!"
-                </p>
-            </div>
-
-            <div class="services_card">
-                <i class="fas fa-credit-card"></i>
-                <h3>Secure Payment</h3>
-                <p>
-                    "Shop confidently with our secure payment options!"
-                </p>
-            </div>
-
         </div>
+    </section>
 
-    </div>
-<br><br><br>
-
-    <!--Books-->
-
-   
-
-
-    
-    <!--Arrivals-->
-    <div class="arrivals">
-    
-        <h1>BOOKS</h1>
-    
-        <div class="arrivals_box">
-            {% for item in allItem %}
-            <div class="arrivals_card">
-                <div class="arrivals_image">
-                    <img src="{{item.b_img.url}}">
-                </div>
-                <div class="arrivals_tag">
-                    <h5>{{item.name}}</h5>
-                        <p class="book_price">{{item.price}}</p>
-                    <a href="/featuresbook1/{{item.id}}" class="arrivals_btn" target="_blank">Learn More</a>
-                </div>
-            </div>
+    <!-- ==================== CATEGORY FILTER CHIPS ==================== -->
+    <section class="dsl-filter-bar">
+        <div class="dsl-filter-label">Browse by mood</div>
+        <div class="dsl-chips-wrapper">
+            <a href="{% url 'hmpage' %}" class="dsl-chip active">All books</a>
+            {% for category in categories %}
+                <a href="{% url 'arrivalspage' category.id %}" class="dsl-chip">{{ category.cat_name }}</a>
             {% endfor %}
-            <!-- <div class="arrivals_card">
-                <div class="arrivals_image">
-                    <img src="{% static 'myapp/image/arrival_2.jpg' %}">
-                </div>
-                <div class="arrivals_tag">
-                    <p>New Arrivals</p>
-                    
-                    <a href="arrivalsbook2.html" class="arrivals_btn" target="_blank">Learn More</a>
-                </div>
-            </div>
-    
-            <div class="arrivals_card">
-                <div class="arrivals_image">
-                    <img src="{% static 'myapp/image/arrival_3.jpg' %}">
-                </div>
-                <div class="arrivals_tag">
-                    <p>New Arrivals</p>
-                   
-                    <a href="arrivalsbook3.html" class="arrivals_btn" target="_blank">Learn More</a>
-                </div>
-            </div>
-    
-            <div class="arrivals_card">
-                <div class="arrivals_image">
-                    <img src="{% static 'myapp/image/arrival_4.jpg' %}">
-                </div>
-                <div class="arrivals_tag">
-                    <p>New Arrivals</p>
-                    
-                    <a href="arrivalsbook4.html" class="arrivals_btn" target="_blank">Learn More</a>
-                </div>
-            </div>
-    
-            <div class="arrivals_card">
-                <div class="arrivals_image">
-                    <img src="{% static 'myapp/image/arrival_5.jpg' %}">
-                </div>
-                <div class="arrivals_tag">
-                    <p>New Arrivals</p>
-                   
-                    <a href="arrivalsbook5.html" class="arrivals_btn" target="_blank">Learn More</a>
-                </div>
-            </div>
-    
-            <div class="arrivals_card">
-                <div class="arrivals_image">
-                    <img src="{% static 'myapp/images/arrivalbook6.jpg' %}">
-                </div>
-                <div class="arrivals_tag">
-                    <p>New Arrivals</p>
-                    
-                    <a href="arrivalsbook6.html" class="arrivals_btn" target="_blank">Learn More</a>
-                </div>
-            </div>
-    
-            <div class="arrivals_card">
-                <div class="arrivals_image">
-                    <img src="{% static 'myapp/images/arrivalbook7.jpg' %}">
-                </div>
-                <div class="arrivals_tag">
-                    <p>New Arrivals</p>
-                    
-                    <a href="arrivalsbook7.html" class="arrivals_btn" target="_blank">Learn More</a>
-                </div>
-            </div>
-    
-            <div class="arrivals_card">
-                <div class="arrivals_image">
-                    <img src="{% static 'myapp/image/arrival_8.webp' %}">
-                </div>
-                <div class="arrivals_tag">
-                    <p>New Arrivals</p>
-                    
-                    <a href="arrivalsbook8.html" class="arrivals_btn" target="_blank">Learn More</a>
-                </div>
-            </div>
-    
-            <div class="arrivals_card">
-                <div class="arrivals_image">
-                    <img src="{% static 'myapp/image/arrival_9.jpg' %}">
-                </div>
-                <div class="arrivals_tag">
-                    <p>New Arrivals</p>
-                    
-                    <a href="arrivalsbook9.html" class="arrivals_btn" target="_blank">Learn More</a>
-                </div>
-            </div>
-    
-            <div class="arrivals_card">
-                <div class="arrivals_image">
-                    <img src="{% static 'myapp/images/arrivalbook10.jpg' %}">
-                </div>
-                <div class="arrivals_tag">
-                    <p>New Arrivals</p>
-                    
-                    <a href="arrivalsbook10.html" class="arrivals_btn" target="_blank">Learn More</a>
-                </div>
-            </div> -->
-    
         </div>
-    
-    </div>
-    <br><br><br>
+    </section>
 
-
-
-    <!--reviews-->
-<br><br><br>
-<section id="Reviews">  <!--for link navigation links-->
-    <div class="reviews">
-    
-        <h1>Reviews</h1>
-
-        <div class="review_box">
-
-            <div class="review_card">
-                
-                <div class="card_top">
-                    <img src="{% static 'myapp/image/review_1.png' %}">
-                </div>
-                <div class="card">
-                    <h4>Evelyn Waters</h4>
-                    <p>This book explores gardening's transformative history, with a focus on George Orwell's impact. The author provides engaging and accessible writing, offering valuable historical context and connections between gardening and social justice. 
-
-                    </p>
-               
-                </div>
+    <!-- ==================== BOOK CATALOG GRID ==================== -->
+    <section id="catalog" class="dsl-grid-section">
+        <div class="dsl-section-header">
+            <div>
+                <span class="dsl-kicker">Fresh on the shelf</span>
+                <h2 class="dsl-section-title">New arrivals</h2>
             </div>
-
-            <div class="review_card">
-                
-                <div class="card_top">
-                    <img src="{% static 'myapp/image/review_2.png' %}">
-                </div>
-                <div class="card">
-                    <h4>Lena Grant </h4>
-                    <p>This book redefines gardening as a tool for community, activism, and social change. The author's enthusiasm for radical gardening is inspiring, with well-researched content and practical examples. Highly recommended for those looking to create positive impact through gardening.
-                    </p>
-                   
-                </div>
-            </div>
-
-            <div class="review_card">
-               
-                <div class="card_top">
-                    <img src="{% static 'myapp/image/review_3.png' %}">
-                </div>
-                <div class="card">
-                    <h4>Abhijit Roy</h4>
-                    <p>This book celebrates gardening's transformative power and inspires positive change, offering practical advice and real-world examples while emphasizing community, cooperation, inclusivity, and diversity. A must-read for gardening and social change enthusiasts.
-
-
-                    </p>
-                    
-                </div>
-            </div>
-
-            <div class="review_card">
-               
-                <div class="card_top">
-                    <img src="{% static 'myapp/image/review_4.png' %}">
-                </div>
-                <div class="card">
-                    <h4>Ava Moreno</h4>
-                    <p>This book inspires positive change through gardening with practical advice and real-world examples. It emphasizes community, cooperation, inclusivity, and diversity in the gardening movement. A must-read for anyone interested in gardening and social change.
-                    </p>
-                    
-                </div>
-            </div>
-
+            {% if categories %}
+                <a href="{% url 'arrivalspage' categories.0.id %}" class="dsl-section-link">
+                    View all books <i class="fas fa-arrow-right"></i>
+                </a>
+            {% endif %}
         </div>
-   
-    </div>
-</section>
 
-<!--Banner-->
+        <div class="dsl-book-grid">
+            {% for item in allItem %}
+                <article class="dsl-book-card">
+                    <!-- Book Cover Frame with Pastel Backdrop -->
+                    <a href="{% url 'featuresbook1page' item.id %}" class="dsl-book-frame" title="View details for {{ item.name }}">
+                        {% if item.b_img %}
+                            <img src="{{ item.b_img.url }}" alt="{{ item.name }}" class="dsl-book-cover" loading="lazy">
+                        {% else %}
+                            <img src="{% static 'myapp/images/placeholder.png' %}" alt="{{ item.name }}" class="dsl-book-cover" loading="lazy">
+                        {% endif %}
+                    </a>
 
+                    <!-- Badges -->
+                    <div class="dsl-badge-group">
+                        <span class="dsl-badge-cat">{{ item.category.cat_name }}</span>
+                        <span class="dsl-badge-format">{{ item.binding|default:"Paperback" }}</span>
+                    </div>
 
+                    <!-- Title & Author -->
+                    <a href="{% url 'featuresbook1page' item.id %}" class="dsl-book-title">
+                        {{ item.name }}
+                    </a>
+                    <p class="dsl-book-author">{{ item.author }}</p>
 
-    
-
-    <!--Blog--> <!--for link navigation links-->
-<!-- <section id="Blog">   
-    <div class="blog">
-    
-        <h1>Our Blog</h1>
-        <div class="blog_box">
-
-            <div class="blog_card">
-                <div class="blog_img">
-                    <img src="{% static 'myapp/image/blog_1.jpg' %}">
+                    <!-- Price & Action -->
+                    <div class="dsl-book-footer">
+                        <span class="dsl-book-price">₹{{ item.price }}</span>
+                        <a href="{% url 'add_to_cart' item.id %}" class="dsl-book-btn" title="Add {{ item.name }} to cart">
+                            Add to cart
+                        </a>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="dsl-empty-box" style="grid-column: 1 / -1;">
+                    <h3 class="dsl-empty-title">No books found in this collection</h3>
+                    <p class="dsl-empty-desc">Our shelves are regularly updated. Please check back soon!</p>
                 </div>
-                <div class="blog_tag">
-                    <h2>Bloger</h2>
-                    <p>
-                        In today’s fast-paced world, finding time to immerse ourselves in a good book can feel like a luxury. At [Your Bookstore's Name], we’re here to change that. We believe that stories have the power to transport us to new worlds, inspire our dreams, and enrich our lives.
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- ==================== FEATURED SPOTLIGHT ==================== -->
+    {% if allItem %}
+        {% with spotlight=allItem.0 %}
+            <section class="dsl-spotlight">
+                <div class="dsl-spotlight-visual">
+                    {% if spotlight.b_img %}
+                        <img src="{{ spotlight.b_img.url }}" alt="{{ spotlight.name }}" class="dsl-spotlight-cover" loading="lazy">
+                    {% endif %}
+                </div>
+                <div class="dsl-spotlight-content">
+                    <span class="dsl-kicker">The DebSu Edit</span>
+                    <h2 class="dsl-section-title" style="margin-bottom: 0.75rem;">A modern Indian classic</h2>
+                    
+                    {% if spotlight.description %}
+                        <p class="dsl-spotlight-excerpt">
+                            {{ spotlight.description|truncatewords:32 }}
+                        </p>
+                    {% endif %}
+
+                    <h3 class="dsl-spotlight-book-title">
+                        {{ spotlight.name }}
+                    </h3>
+                    <p class="dsl-spotlight-author">
+                        by {{ spotlight.author }} · {{ spotlight.category.cat_name }}
                     </p>
-                    <div class="blog_icon">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <i class="fa-solid fa-heart"></i>
+
+                    <div class="dsl-spotlight-footer">
+                        <span class="dsl-book-price" style="font-size: 1.5rem;">₹{{ spotlight.price }}</span>
+                        <a href="{% url 'featuresbook1page' spotlight.id %}" class="dsl-btn-primary">
+                            Discover this title <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
-            </div>
+            </section>
+        {% endwith %}
+    {% endif %}
 
-            <div class="blog_card">
-                <div class="blog_img">
-                    <img src="{% static 'myapp/image/blog_2.jpg' %}">
-                </div>
-                <div class="blog_tag">
-                    <h2>Bloger</h2>
-                    <p>
-                        Whether you’re a fan of thrilling mysteries, heartwarming romances, thought-provoking non-fiction, or magical adventures, our online bookstore offers something for everyone. With an extensive collection of handpicked titles from renowned authors and emerging voices, we aim to bring the literary universe to your fingertips.
-                    </p>
-                    <div class="blog_icon">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <i class="fa-solid fa-heart"></i>
-                    </div>
-                </div>
-            </div>
+</main>
 
-            <div class="blog_card">
-                <div class="blog_img">
-                    <img src="{% static 'myapp/image/blog_3.jpg' %}">
-                </div>
-                <div class="blog_tag">
-                    <h2>Bloger</h2>
-                    <p>
-                        Our user-friendly platform is designed to make your book-buying experience smooth and enjoyable. Browse through curated categories, check out bestseller lists, and read customer reviews to make informed choices. Plus, with personalized recommendations, you'll always discover your next favorite read.
-                    </p>
-                    <div class="blog_icon">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <i class="fa-solid fa-heart"></i>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    
-    </div>
-</section> -->
-
-    <!--About-->
-
-
-    <div class="about">
-   
-        <div class="about_image">
-            <img src="{% static 'myapp/image/about.png' %}" alt="About Us Image">
-        </div>
-        <div class="about_tag">
-            <h1>About Us</h1>
-            <p>
-                We pride ourselves on providing an exceptional shopping experience, tailored to your needs. Whether you're looking for personalized recommendations, seamless service, or exclusive deals, we are committed to making your journey through the world of books enjoyable and memorable. Our knowledgeable team is always here to assist you, ensuring that you discover the perfect book to suit your tastes.
-                <br><br>
-                Join us at Debsu Lit, and embark on a literary journey that will captivate your imagination and inspire your soul. Dive into the world of stories, explore new perspectives, and let the magic of books enrich your life. Together, let's celebrate the joy of reading and the endless possibilities it brings.
-            </p>
-        </div>
-    
-    </div>
-
-    
-
-
-
-
-    <!--Footer-->
-
-    
 {% include './footer.html' %}

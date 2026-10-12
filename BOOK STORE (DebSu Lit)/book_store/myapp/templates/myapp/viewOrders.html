@@ -1,47 +1,92 @@
 {% load mathfilters %}
 {% load static %}
 {% include './header.html' %}
-<br><br><br>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<meta name="Description" content="Enter your description here"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<title>All Cart</title>
-</head>
-<body>
-    <div class="container">
-        <h2 class="text-center">My Order</h2>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Order Date</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <thead>
-                {% for item in orderItems %}
-                <tr>
-                    <td>{{item.item.name}}</td>
-                    <td>{{item.quantity}}</td>
-                    <td>{{item.date_ordered}}</td>
-                    <td>&#8377; {{ item.quantity | mul:item.item.price}}</td>
-                </tr>
-                {% endfor %}
-            </thead>
-        </table>
+
+<main class="dsl-container">
+
+    <!-- Header Section -->
+    <div class="dsl-cart-header">
+        <span class="dsl-kicker">Your Account</span>
+        <h1 class="dsl-cart-headline">Order history</h1>
+        <p class="dsl-cart-subtitle">
+            Review and track all books you've ordered from DebSu Lit.
+        </p>
     </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
-</body>
-</html>
-<br><br><br>
+
+    {% if orderItems %}
+        <!-- Order History List -->
+        <div class="dsl-orders-list">
+            {% for item in orderItems %}
+                <article class="dsl-order-card">
+                    <!-- Book Cover Thumbnail -->
+                    <div class="dsl-order-thumb">
+                        {% if item.item.b_img %}
+                            <img src="{{ item.item.b_img.url }}" alt="{{ item.item.name }}">
+                        {% else %}
+                            <img src="{% static 'myapp/images/placeholder.png' %}" alt="{{ item.item.name }}">
+                        {% endif %}
+                    </div>
+
+                    <!-- Book & Order Info -->
+                    <div class="dsl-order-info">
+                        {% if item.item.category %}
+                            <span class="dsl-badge-cat" style="font-size: 0.65rem;">{{ item.item.category.cat_name }}</span>
+                        {% endif %}
+
+                        <a href="{% url 'featuresbook1page' item.item.id %}" class="dsl-order-title">
+                            {{ item.item.name }}
+                        </a>
+                        <p class="dsl-order-meta">by {{ item.item.author }}</p>
+
+                        <div class="dsl-order-details-grid">
+                            <span><strong>Qty:</strong> {{ item.quantity }}</span>
+                            {% if item.date_ordered %}
+                                <span><strong>Ordered:</strong> {{ item.date_ordered|date:"d M Y" }}</span>
+                            {% endif %}
+                            {% if item.payment_id %}
+                                <span><strong>Payment ID:</strong> <code style="font-size: 0.8rem; background: #f1f5f9; padding: 2px 5px; border-radius: 3px;">{{ item.payment_id }}</code></span>
+                            {% endif %}
+                            <span class="dsl-order-pill-status">
+                                <i class="fas fa-check-circle"></i> Paid · Razorpay
+                            </span>
+                        </div>
+
+                        {% if item.address %}
+                            <p style="font-size: 0.825rem; color: #64748b; margin-top: 0.65rem; margin-bottom: 0;">
+                                <strong>Shipping address:</strong> {{ item.address }}
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Total & Action -->
+                    <div class="dsl-order-side">
+                        <div class="dsl-order-total">
+                            ₹{{ item.quantity|mul:item.item.price }}
+                        </div>
+                        <a href="{% url 'featuresbook1page' item.item.id %}" class="dsl-order-view-btn">
+                            View book <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <!-- Empty Orders State (Figma Match) -->
+        <section class="dsl-cart-empty-dashed">
+            <div class="dsl-cart-empty-icon">
+                <i class="fas fa-box-open"></i>
+            </div>
+            <h2 class="dsl-cart-empty-title">No orders yet</h2>
+            <p class="dsl-cart-empty-desc">
+                You haven't placed any orders yet. Discover timeless stories and modern voices in our catalogue.
+            </p>
+            <a href="{% url 'hmpage' %}" class="dsl-btn-primary">
+                Browse catalog
+            </a>
+        </section>
+    {% endif %}
+
+</main>
+
 {% include './footer.html' %}

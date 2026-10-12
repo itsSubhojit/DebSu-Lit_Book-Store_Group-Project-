@@ -2,60 +2,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<meta name="Description" content="Enter your description here"/>
-<link rel="stylesheet" href="{% static 'myapp/css/bootstrap.css' %}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<link rel="stylesheet" href="{% static 'myapp/css/FRONT WEB PAGE.CSS' %}">
-<link rel="stylesheet" href="{% static 'myapp/css/RESPONSIVE.CSS' %}">
-<title>DebSu Lit</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DebSu Lit – Curated Bookstore</title>
+    <!-- Bootstrap 4.6 & Icons -->
+    <link rel="stylesheet" href="{% static 'myapp/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- DebSu Lit Modern Design Tokens & Base Styles -->
+    <link rel="stylesheet" href="{% static 'myapp/css/tokens.css' %}?v=11">
+    <link rel="stylesheet" href="{% static 'myapp/css/dsl-style.css' %}?v=11">
+    <!-- jQuery Core (must be loaded before inline scripts) -->
+    <script src="{% static 'myapp/js/jquery.min.js' %}"></script>
 </head>
-<body>
-    <section id="Home"> <!--for link navigation links-->
-    
-            <nav>
-                <div class="logo">
-                    <img src="{% static 'myapp/images/DebSu Lit logo.png' %}">
-                </div>
-    
-                <ul>
-                    <li><a  href="#"></a></li>
-                    <li><a href="{% url 'hmpage' %}">Home</a></li>
-                    <li><a href="{% url 'aboutpage' %}">About</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="booksDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Categories
+<body class="dsl-body">
+
+    <!-- Sticky Main Navigation -->
+    <header class="dsl-header">
+        <div class="dsl-container">
+            <nav class="dsl-header-nav">
+                <!-- Brand Badge & Name -->
+                <a href="{% url 'hmpage' %}" class="dsl-brand">
+                    <span class="dsl-logo-badge">D</span>
+                    <span class="dsl-brand-name">DebSu <span>Lit</span></span>
+                </a>
+
+                <!-- Navigation Links -->
+                <ul class="dsl-nav-menu">
+                    <li><a href="{% url 'hmpage' %}" class="dsl-nav-link">Home</a></li>
+                    <li><a href="{% url 'aboutpage' %}" class="dsl-nav-link">Our story</a></li>
+                    <li class="dsl-dropdown">
+                        <a href="#" class="dsl-nav-link">
+                            Browse books <i class="fas fa-chevron-down" style="font-size: 0.65rem;"></i>
                         </a>
-                        <div class="dropdown-menu" aria-labelledby="booksDropdown">
+                        <div class="dsl-dropdown-menu">
                             {% for category in categories %}
-                                <a class="dropdown-item" href="/arrivals/{{category.id}}">{{ category.cat_name }}</a>
+                                <a href="{% url 'arrivalspage' category.id %}" class="dsl-dropdown-item">{{ category.cat_name }}</a>
+                            {% empty %}
+                                <span class="dsl-dropdown-item text-muted">No categories</span>
                             {% endfor %}
                         </div>
                     </li>
-                
-                    <li><a href="{% url 'my-orders' %}">Order</a></li>
                     {% if user.is_authenticated %}
-                    <li><a href="{% url 'useraccountpage' %}">{{request.user.get_full_name}}</a></li>
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                        <li><a href="{% url 'my-orders' %}" class="dsl-nav-link">My orders</a></li>
                     {% endif %}
                 </ul>
-    
-                <div class="social_icon">
-                    <form class="form-inline">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                      
-                    <a href="{% url 'useraccountpage' %}" target="_blank"><i class="fas fa-user"></i></a>
-                    <a href="{% url 'view_cart' %}" target="_blank"><i class="fas fa-shopping-cart"></i></a>
-                </form>
-                    
+
+                <!-- Action Links (Cart & Auth) -->
+                <div class="dsl-nav-actions">
+                    <a href="{% url 'view_cart' %}" class="dsl-cart-btn">
+                        <i class="fas fa-shopping-bag"></i> Cart
+                        {% if cart_count and cart_count > 0 %}
+                            <span class="dsl-cart-badge">{{ cart_count }}</span>
+                        {% endif %}
+                    </a>
+
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'useraccountpage' %}" class="dsl-user-btn" title="Account settings">
+                            <i class="far fa-user-circle"></i> {{ request.user.first_name|default:request.user.username }}
+                        </a>
+                        <a href="{% url 'logout' %}" class="dsl-nav-link text-muted" title="Logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'loginpage' %}" class="dsl-auth-btn">
+                            Sign in
+                        </a>
+                    {% endif %}
                 </div>
-    
             </nav>
+        </div>
+    </header>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-<br><br>
-
-    
+    <!-- Announcement Bar directly under header (Figma design) -->
+    <div class="dsl-topbar">
+        Free delivery on orders above ₹499 across India
+    </div>

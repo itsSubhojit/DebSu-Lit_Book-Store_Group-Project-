@@ -1,129 +1,81 @@
 {% load static %}
 {% include './header.html' %}
 
+<main class="dsl-container" style="padding-top: var(--dsl-space-8);">
 
-<link rel="stylesheet" href="{% static 'myapp/css/FRONT WEB PAGE.CSS' %}">
-<title>Arrivals</title>
-<br><br>
-<div class="arrivals">
-    
-    <h1>BOOKS</h1>
-
-    <div class="arrivals_box">
-        {% for item in allItem %}
-        <div class="arrivals_card">
-            <div class="arrivals_image">
-                <img src="{{item.b_img.url}}">
-            </div>
-            <div class="arrivals_tag">
-                <h5>{{item.name}}</h5>
-                    <p class="book_price">{{item.price}}</p>
-                <a href="/featuresbook1/{{item.id}}" class="arrivals_btn" target="_blank">Grab Now</a>
-            </div>
+    <!-- ==================== CATEGORY FILTER CHIPS ==================== -->
+    <section class="dsl-filter-bar">
+        <div class="dsl-filter-label">Browse by mood</div>
+        <div class="dsl-chips-wrapper">
+            <a href="{% url 'hmpage' %}" class="dsl-chip">All books</a>
+            {% for category in categories %}
+                <a href="{% url 'arrivalspage' category.id %}" class="dsl-chip {% if allItem and allItem.0.category.id == category.id %}active{% endif %}">
+                    {{ category.cat_name }}
+                </a>
+            {% endfor %}
         </div>
-        {% endfor %}
-        <!-- <div class="arrivals_card">
-            <div class="arrivals_image">
-                <img src="{% static 'myapp/image/arrival_2.jpg' %}">
-            </div>
-            <div class="arrivals_tag">
-                <p>New Arrivals</p>
-                
-                <a href="arrivalsbook2.html" class="arrivals_btn" target="_blank">Learn More</a>
-            </div>
-        </div>
+    </section>
 
-        <div class="arrivals_card">
-            <div class="arrivals_image">
-                <img src="{% static 'myapp/image/arrival_3.jpg' %}">
+    <!-- ==================== FILTERED CATALOG ==================== -->
+    <section class="dsl-grid-section">
+        <div class="dsl-section-header">
+            <div>
+                <span class="dsl-kicker">Collection Showcase</span>
+                <h2 class="dsl-section-title">
+                    {% if allItem and allItem.0.category %}
+                        {{ allItem.0.category.cat_name }}
+                    {% else %}
+                        Books
+                    {% endif %}
+                </h2>
             </div>
-            <div class="arrivals_tag">
-                <p>New Arrivals</p>
-               
-                <a href="arrivalsbook3.html" class="arrivals_btn" target="_blank">Learn More</a>
-            </div>
+            <a href="{% url 'hmpage' %}" class="dsl-section-link">
+                <i class="fas fa-arrow-left"></i> All collections
+            </a>
         </div>
 
-        <div class="arrivals_card">
-            <div class="arrivals_image">
-                <img src="{% static 'myapp/image/arrival_4.jpg' %}">
-            </div>
-            <div class="arrivals_tag">
-                <p>New Arrivals</p>
-                
-                <a href="arrivalsbook4.html" class="arrivals_btn" target="_blank">Learn More</a>
-            </div>
+        <div class="dsl-book-grid">
+            {% for item in allItem %}
+                <article class="dsl-book-card">
+                    <!-- Book Cover Frame with Pastel Backdrop -->
+                    <a href="{% url 'featuresbook1page' item.id %}" class="dsl-book-frame" title="View details for {{ item.name }}">
+                        {% if item.b_img %}
+                            <img src="{{ item.b_img.url }}" alt="{{ item.name }}" class="dsl-book-cover" loading="lazy">
+                        {% else %}
+                            <img src="{% static 'myapp/images/placeholder.png' %}" alt="{{ item.name }}" class="dsl-book-cover" loading="lazy">
+                        {% endif %}
+                    </a>
+
+                    <!-- Badges -->
+                    <div class="dsl-badge-group">
+                        <span class="dsl-badge-cat">{{ item.category.cat_name }}</span>
+                        <span class="dsl-badge-format">{{ item.binding|default:"Paperback" }}</span>
+                    </div>
+
+                    <!-- Title & Author -->
+                    <a href="{% url 'featuresbook1page' item.id %}" class="dsl-book-title">
+                        {{ item.name }}
+                    </a>
+                    <p class="dsl-book-author">{{ item.author }}</p>
+
+                    <!-- Price & Action -->
+                    <div class="dsl-book-footer">
+                        <span class="dsl-book-price">₹{{ item.price }}</span>
+                        <a href="{% url 'add_to_cart' item.id %}" class="dsl-book-btn" title="Add {{ item.name }} to cart">
+                            Add to cart
+                        </a>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="dsl-empty-box" style="grid-column: 1 / -1;">
+                    <h3 class="dsl-empty-title">No books in this collection yet</h3>
+                    <p class="dsl-empty-desc">Check back soon or browse our other curated categories.</p>
+                    <a href="{% url 'hmpage' %}" class="dsl-btn-primary">Browse all books</a>
+                </div>
+            {% endfor %}
         </div>
+    </section>
 
-        <div class="arrivals_card">
-            <div class="arrivals_image">
-                <img src="{% static 'myapp/image/arrival_5.jpg' %}">
-            </div>
-            <div class="arrivals_tag">
-                <p>New Arrivals</p>
-               
-                <a href="arrivalsbook5.html" class="arrivals_btn" target="_blank">Learn More</a>
-            </div>
-        </div>
-
-        <div class="arrivals_card">
-            <div class="arrivals_image">
-                <img src="{% static 'myapp/images/arrivalbook6.jpg' %}">
-            </div>
-            <div class="arrivals_tag">
-                <p>New Arrivals</p>
-                
-                <a href="arrivalsbook6.html" class="arrivals_btn" target="_blank">Learn More</a>
-            </div>
-        </div>
-
-        <div class="arrivals_card">
-            <div class="arrivals_image">
-                <img src="{% static 'myapp/images/arrivalbook7.jpg' %}">
-            </div>
-            <div class="arrivals_tag">
-                <p>New Arrivals</p>
-                
-                <a href="arrivalsbook7.html" class="arrivals_btn" target="_blank">Learn More</a>
-            </div>
-        </div>
-
-        <div class="arrivals_card">
-            <div class="arrivals_image">
-                <img src="{% static 'myapp/image/arrival_8.webp' %}">
-            </div>
-            <div class="arrivals_tag">
-                <p>New Arrivals</p>
-                
-                <a href="arrivalsbook8.html" class="arrivals_btn" target="_blank">Learn More</a>
-            </div>
-        </div>
-
-        <div class="arrivals_card">
-            <div class="arrivals_image">
-                <img src="{% static 'myapp/image/arrival_9.jpg' %}">
-            </div>
-            <div class="arrivals_tag">
-                <p>New Arrivals</p>
-                
-                <a href="arrivalsbook9.html" class="arrivals_btn" target="_blank">Learn More</a>
-            </div>
-        </div>
-
-        <div class="arrivals_card">
-            <div class="arrivals_image">
-                <img src="{% static 'myapp/images/arrivalbook10.jpg' %}">
-            </div>
-            <div class="arrivals_tag">
-                <p>New Arrivals</p>
-                
-                <a href="arrivalsbook10.html" class="arrivals_btn" target="_blank">Learn More</a>
-            </div>
-        </div> -->
-
-    </div>
-
-</div>
-<br><br><br>
+</main>
 
 {% include './footer.html' %}
