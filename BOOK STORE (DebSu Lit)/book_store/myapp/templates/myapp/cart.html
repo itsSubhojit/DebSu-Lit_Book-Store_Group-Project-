@@ -1,102 +1,389 @@
 {% load mathfilters %}
 {% load static %}
 {% include './header.html' %}
-<br><br><br>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<meta name="Description" content="Enter your description here"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<title>All Cart</title>
-</head>
-<body>
-    <div class="container">
-        <h2 class="text-center">My Cart</h2>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <thead>
+
+<main class="dsl-container">
+
+    {% if cart_items %}
+        <!-- ==================== POPULATED CART (FIGMA MATCH) ==================== -->
+        <div class="dsl-cart-header">
+            <span class="dsl-kicker">Your selection</span>
+            <h1 class="dsl-cart-headline">Shopping cart</h1>
+            <p class="dsl-cart-subtitle">
+                {{ cart_items|length }} book{% if cart_items|length != 1 %}s{% endif %} reserved for you
+            </p>
+        </div>
+
+        <div class="dsl-cart-layout">
+            <!-- Left: Reserved Items List -->
+            <div class="dsl-cart-items-list">
                 {% for item in cart_items %}
-                <tr>
-                    <td>{{item.item.name}}
-                    <a href="/remove/{{item.id}}" class="btn btn-danger">Remove</a></td>
-                    <td>{{item.quantity}}</td>
-                    <td>&#8377;{{item.item.price}}</td>
-                    <td>{{ item.quantity | mul:item.item.price}}</td>
-                </tr>
+                    <article class="dsl-cart-item">
+                        <!-- Book Thumbnail in Pastel Frame -->
+                        <div class="dsl-cart-thumb">
+                            {% if item.item.b_img %}
+                                <img src="{{ item.item.b_img.url }}" alt="{{ item.item.name }}">
+                            {% else %}
+                                <img src="{% static 'myapp/images/placeholder.png' %}" alt="{{ item.item.name }}">
+                            {% endif %}
+                        </div>
+
+                        <!-- Book Meta & Specs -->
+                        <div class="dsl-cart-item-details">
+                            {% if item.item.category %}
+                                <span class="dsl-badge-cat" style="font-size: 0.65rem;">{{ item.item.category.cat_name }}</span>
+                            {% endif %}
+                            
+                            <a href="{% url 'featuresbook1page' item.item.id %}" class="dsl-cart-item-title">
+                                {{ item.item.name }}
+                            </a>
+                            <p class="dsl-cart-item-author">{{ item.item.author }}</p>
+
+                            <div class="dsl-cart-item-meta">
+                                <span class="dsl-cart-qty-pill">Qty: {{ item.quantity }}</span>
+                                <a href="/remove/{{ item.id }}" class="dsl-cart-remove-link" title="Remove {{ item.item.name }} from cart">
+                                    <i class="far fa-trash-alt"></i> Remove
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Line Item Total -->
+                        <div class="dsl-cart-item-price">
+                            ₹{{ item.quantity|mul:item.item.price }}
+                        </div>
+                    </article>
                 {% endfor %}
-                <tr>
-                    <td colspan="3" class="text-right">Grand Total</td>
-                    <td>&#8377;{{total_price}}</td>
-                </tr>
-            </thead>
-        </table>
-        <form id="payment-form">
-            {% csrf_token %}
-            <textarea name="address" id="address" cols="30", rows="3" class="form-control" placeholder="Enter Delivery Address"></textarea>
-            <input type="hidden" id="amount" name="amount" value="{{ total_price }}"><br><br>
-            <button type="button" id="pay-button" class="btn btn-primary">Pay Now</button>
-        </form><br><br>
-    </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+                <div>
+                    <a href="{% url 'hmpage' %}" class="dsl-cart-continue">
+                        <i class="fas fa-arrow-left"></i> Continue shopping
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right: Sticky Order Summary & Razorpay Checkout -->
+            <aside>
+                <div class="dsl-summary-card">
+                    <h2 class="dsl-summary-title">Order summary</h2>
+
+                    <div class="dsl-summary-row">
+                        <span class="label">Subtotal</span>
+                        <span class="value">₹{{ total_price }}</span>
+                    </div>
+
+                    <div class="dsl-summary-row">
+                        <span class="label">Delivery</span>
+                        <span class="value text-success font-weight-bold">Free</span>
+                    </div>
+
+                    <div class="dsl-summary-total-row">
+                        <span>Total</span>
+                        <span>₹{{ total_price }}</span>
+                    </div>
+
+                    <!-- Payment Form & Delivery Address -->
+                    <form id="payment-form">
+                        {% csrf_token %}
+
+                        <!-- Delivery Address Section -->
+                        {% if saved_user.full_address %}
+                            <div class="dsl-checkout-section" id="savedAddressSection">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                                    <span class="dsl-checkout-section-title">
+                                        <i class="fas fa-map-marker-alt" style="color: var(--dsl-brand-primary);"></i> Delivery address
+                                    </span>
+                                    <span class="dsl-profile-badge">
+                                        <i class="fas fa-check-circle"></i> Saved in profile
+                                    </span>
+                                </div>
+                                <div class="dsl-saved-address-card selected" id="savedAddressCard">
+                                    <strong>{{ request.user.get_full_name|default:request.user.username }}</strong><br>
+                                    {{ saved_user.full_address }}<br>
+                                    <span style="color: #64748b; font-size: 0.8rem;">Phone: {{ saved_user.mobile }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+                                    <button type="button" id="btnUseDifferentAddress" class="btn btn-link p-0" style="color: var(--dsl-brand-primary); font-size: 0.8rem; text-decoration: underline; font-weight: 500;">
+                                        Deliver to a different address
+                                    </button>
+                                    <a href="{% url 'useraccountpage' %}" style="color: #64748b; text-decoration: underline;">
+                                        Edit profile address
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- New / Structured Address Fields Form -->
+                        <div class="dsl-checkout-section" id="newAddressSection" {% if saved_user.full_address %}style="display: none;"{% endif %}>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                <span class="dsl-checkout-section-title">
+                                    <i class="fas fa-truck" style="color: var(--dsl-brand-primary);"></i> Enter delivery address
+                                </span>
+                                {% if saved_user.full_address %}
+                                    <button type="button" id="btnUseSavedAddress" class="btn btn-link p-0" style="color: var(--dsl-brand-primary); font-size: 0.8rem; text-decoration: underline; font-weight: 500;">
+                                        Use saved address
+                                    </button>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="dsl-form-group" style="margin-bottom: 0.65rem;">
+                                <label class="dsl-form-label" style="font-size: 0.8rem;" for="addr_line1">Flat / House / Apartment No. <span class="text-danger">*</span></label>
+                                <input type="text" id="addr_line1" name="addr_line1" class="dsl-form-input" style="padding: 0.55rem 0.75rem; font-size: 0.85rem;" placeholder="e.g. Flat 4B, Sunrise Heights" value="{{ saved_user.address_line1|default:'' }}">
+                            </div>
+
+                            <div class="dsl-form-group" style="margin-bottom: 0.65rem;">
+                                <label class="dsl-form-label" style="font-size: 0.8rem;" for="addr_line2">Street / Road / Area / Landmark <span class="text-danger">*</span></label>
+                                <input type="text" id="addr_line2" name="addr_line2" class="dsl-form-input" style="padding: 0.55rem 0.75rem; font-size: 0.85rem;" placeholder="e.g. 12 Park Street, Near City Mall" value="{{ saved_user.address_line2|default:'' }}">
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 0.65rem;">
+                                <div class="dsl-form-group" style="margin-bottom: 0;">
+                                    <label class="dsl-form-label" style="font-size: 0.8rem;" for="addr_city">City <span class="text-danger">*</span></label>
+                                    <input type="text" id="addr_city" name="addr_city" class="dsl-form-input" style="padding: 0.55rem 0.75rem; font-size: 0.85rem;" placeholder="City" value="{{ saved_user.city|default:'' }}">
+                                </div>
+                                <div class="dsl-form-group" style="margin-bottom: 0;">
+                                    <label class="dsl-form-label" style="font-size: 0.8rem;" for="addr_state">State <span class="text-danger">*</span></label>
+                                    <input type="text" id="addr_state" name="addr_state" class="dsl-form-input" style="padding: 0.55rem 0.75rem; font-size: 0.85rem;" placeholder="State" value="{{ saved_user.state|default:'' }}">
+                                </div>
+                            </div>
+
+                            <div class="dsl-form-group" style="margin-bottom: 0.75rem;">
+                                <label class="dsl-form-label" style="font-size: 0.8rem;" for="addr_pincode">PIN Code (6 digits) <span class="text-danger">*</span></label>
+                                <input type="text" id="addr_pincode" name="addr_pincode" maxlength="6" class="dsl-form-input" style="padding: 0.55rem 0.75rem; font-size: 0.85rem;" placeholder="e.g. 700001" value="{{ saved_user.pincode|default:'' }}">
+                            </div>
+
+                            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: #334155; cursor: pointer; user-select: none;">
+                                <input type="checkbox" id="save_to_profile" name="save_to_profile" checked>
+                                Save this delivery address to my account profile
+                            </label>
+                        </div>
+
+                        <!-- Booking for Someone Else / Gift Delivery -->
+                        <div class="dsl-checkout-section" style="background-color: #fffdf5; border-color: #fde68a;">
+                            <label class="dsl-gift-toggle-wrap" style="margin-bottom: 0;">
+                                <input type="checkbox" id="booking_for_someone_else" name="booking_for_someone_else">
+                                <span><i class="fas fa-gift" style="color: #d97706;"></i> Ordering for someone else / Gift delivery</span>
+                            </label>
+
+                            <div id="someoneElseFields" style="display: none; margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px dashed #fcd34d;">
+                                <div class="dsl-form-group" style="margin-bottom: 0.65rem;">
+                                    <label class="dsl-form-label" style="font-size: 0.8rem;" for="recipient_name">Recipient's Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="recipient_name" name="recipient_name" class="dsl-form-input" style="padding: 0.55rem 0.75rem; font-size: 0.85rem;" placeholder="Recipient's Name">
+                                </div>
+
+                                <div class="dsl-form-group" style="margin-bottom: 0.65rem;">
+                                    <label class="dsl-form-label" style="font-size: 0.8rem;" for="recipient_phone">Recipient's Mobile (10 digits) <span class="text-danger">*</span></label>
+                                    <input type="text" id="recipient_phone" name="recipient_phone" maxlength="10" class="dsl-form-input" style="padding: 0.55rem 0.75rem; font-size: 0.85rem;" placeholder="10-digit mobile number">
+                                </div>
+
+                                <div class="dsl-form-group" style="margin-bottom: 0;">
+                                    <label class="dsl-form-label" style="font-size: 0.8rem;" for="gift_note">Gift Message / Note (Optional)</label>
+                                    <textarea id="gift_note" name="gift_note" rows="2" class="dsl-form-input" style="padding: 0.55rem 0.75rem; font-size: 0.85rem;" placeholder="e.g. Happy Reading! Special delivery instructions..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="amount" name="amount" value="{{ total_price }}">
+
+                        <button type="button" id="pay-button" class="dsl-summary-pay-btn">
+                            <i class="fas fa-lock"></i> Pay with Razorpay &rarr;
+                        </button>
+                    </form>
+
+                    <p class="dsl-summary-footnote">
+                        <i class="fas fa-shield-alt"></i> Secure checkout · UPI, cards, netbanking & wallets
+                    </p>
+                </div>
+            </aside>
+        </div>
+
+    {% else %}
+        <!-- ==================== EMPTY CART VIEW (FIGMA MATCH) ==================== -->
+        <div class="dsl-cart-header">
+            <h1 class="dsl-cart-headline">Your cart</h1>
+        </div>
+
+        <section class="dsl-cart-empty-dashed">
+            <div class="dsl-cart-empty-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h2 class="dsl-cart-empty-title">Your cart is waiting</h2>
+            <p class="dsl-cart-empty-desc">
+                A good book belongs here. Browse our shelves and find one that speaks to you.
+            </p>
+            <a href="{% url 'hmpage' %}" class="dsl-btn-primary">
+                Browse books
+            </a>
+        </section>
+    {% endif %}
+
+</main>
+
+<!-- Razorpay Checkout Integration -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
     $(document).ready(function() {
+        let useSavedAddress = {% if saved_user.full_address %}true{% else %}false{% endif %};
+        const savedFullAddress = "{{ saved_user.full_address|escapejs }}";
+
+        // Toggle address input views
+        $("#btnUseDifferentAddress").click(function() {
+            useSavedAddress = false;
+            $("#savedAddressSection").slideUp(200);
+            $("#newAddressSection").slideDown(200);
+            $("#addr_line1").focus();
+        });
+
+        $("#btnUseSavedAddress").click(function() {
+            useSavedAddress = true;
+            $("#newAddressSection").slideUp(200);
+            $("#savedAddressSection").slideDown(200);
+        });
+
+        // Toggle "Booking for someone else" fields
+        $("#booking_for_someone_else").change(function() {
+            if ($(this).is(":checked")) {
+                $("#someoneElseFields").slideDown(200);
+                $("#recipient_name").focus();
+            } else {
+                $("#someoneElseFields").slideUp(200);
+            }
+        });
+
+        // Numeric-only restriction for PIN code and Recipient Phone
+        $("#addr_pincode").on("input", function() {
+            this.value = this.value.replace(/\D/g, "").slice(0, 6);
+        });
+
+        $("#recipient_phone").on("input", function() {
+            this.value = this.value.replace(/\D/g, "").slice(0, 10);
+        });
+
+        // Razorpay Checkout Click Handler
         $("#pay-button").click(function(e) {
             e.preventDefault();
 
-            const address = $("#address").val().trim();
-            if (!address) {
-                alert("Please enter a delivery address before proceeding to payment.");
-                $("#address").focus();
-                return;
+            let baseAddress = "";
+            let addrLine1 = "";
+            let addrLine2 = "";
+            let addrCity = "";
+            let addrState = "";
+            let addrPincode = "";
+            let saveToProfile = $("#save_to_profile").is(":checked") ? "true" : "false";
+
+            if (useSavedAddress && savedFullAddress) {
+                baseAddress = savedFullAddress;
+            } else {
+                addrLine1 = $("#addr_line1").val().trim();
+                addrLine2 = $("#addr_line2").val().trim();
+                addrCity = $("#addr_city").val().trim();
+                addrState = $("#addr_state").val().trim();
+                addrPincode = $("#addr_pincode").val().trim();
+
+                if (!addrLine1) {
+                    alert("Please enter Flat / House / Apartment details.");
+                    $("#addr_line1").focus();
+                    return;
+                }
+                if (!addrLine2) {
+                    alert("Please enter Street / Area / Landmark details.");
+                    $("#addr_line2").focus();
+                    return;
+                }
+                if (!addrCity) {
+                    alert("Please enter City.");
+                    $("#addr_city").focus();
+                    return;
+                }
+                if (!addrState) {
+                    alert("Please enter State.");
+                    $("#addr_state").focus();
+                    return;
+                }
+                if (!addrPincode || addrPincode.length !== 6 || !/^\d{6}$/.test(addrPincode)) {
+                    alert("Please enter a valid 6-digit PIN code.");
+                    $("#addr_pincode").focus();
+                    return;
+                }
+
+                baseAddress = addrLine1 + ", " + addrLine2 + ", " + addrCity + ", " + addrState + " - " + addrPincode;
+            }
+
+            // Check if ordering for someone else
+            const isBookingForSomeoneElse = $("#booking_for_someone_else").is(":checked");
+            let recipientName = "";
+            let recipientPhone = "";
+            let giftNote = "";
+            let finalAddressString = baseAddress;
+
+            if (isBookingForSomeoneElse) {
+                recipientName = $("#recipient_name").val().trim();
+                recipientPhone = $("#recipient_phone").val().trim();
+                giftNote = $("#gift_note").val().trim();
+
+                if (!recipientName) {
+                    alert("Please enter recipient's full name.");
+                    $("#recipient_name").focus();
+                    return;
+                }
+                if (!recipientPhone || recipientPhone.length !== 10 || !/^\d{10}$/.test(recipientPhone)) {
+                    alert("Please enter a valid 10-digit mobile number for the recipient.");
+                    $("#recipient_phone").focus();
+                    return;
+                }
+
+                finalAddressString = "Recipient: " + recipientName + " (Ph: " + recipientPhone + ")\nAddress: " + baseAddress;
+                if (giftNote) {
+                    finalAddressString += "\nGift Note: " + giftNote;
+                }
             }
 
             const $btn = $("#pay-button");
-            $btn.prop("disabled", true).text("Initializing checkout...");
+            const originalText = $btn.html();
+            $btn.prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i> Initializing checkout...');
 
-            // Initiate payment on the server (amount is safely computed backend-side)
+            // Initiate payment on the server
             $.ajax({
                 type: "POST",
                 url: "/initiate-payment/",
-                data: { address: address },
+                data: {
+                    address: finalAddressString,
+                    save_to_profile: saveToProfile,
+                    addr_line1: addrLine1,
+                    addr_line2: addrLine2,
+                    addr_city: addrCity,
+                    addr_state: addrState,
+                    addr_pincode: addrPincode
+                },
                 dataType: "json",
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader("X-CSRFToken", $("[name=csrfmiddlewaretoken]").val());
                 },
                 success: function(data) {
+                    const prefillData = data.prefill || {};
+                    if (isBookingForSomeoneElse) {
+                        prefillData.name = recipientName;
+                        prefillData.contact = recipientPhone;
+                    }
+
                     const options = {
                         key: data.key,
                         amount: data.amount,
                         currency: data.currency,
                         order_id: data.id,
-                        name: data.name,
-                        description: data.description,
-                        prefill: data.prefill || {},
+                        name: "DebSu Lit",
+                        description: "Order #" + data.id,
+                        prefill: prefillData,
                         theme: {
-                            color: "#007bff"
+                            color: "#1b2a4a"
                         },
                         modal: {
                             ondismiss: function() {
-                                $btn.prop("disabled", false).text("Pay Now");
+                                $btn.prop("disabled", false).html(originalText);
                             }
                         },
                         handler: function(response) {
-                            $btn.text("Verifying payment...");
-                            // Send cryptographically verifiable signature to server
+                            $btn.html('<i class="fas fa-spinner fa-spin"></i> Verifying payment...');
                             $.ajax({
                                 type: "POST",
                                 url: "/verify-payment/",
@@ -104,7 +391,7 @@
                                     razorpay_order_id: response.razorpay_order_id,
                                     razorpay_payment_id: response.razorpay_payment_id,
                                     razorpay_signature: response.razorpay_signature,
-                                    address: address
+                                    address: finalAddressString
                                 },
                                 dataType: "json",
                                 beforeSend: function(xhr) {
@@ -133,7 +420,7 @@
                     rzp.open();
                 },
                 error: function(error) {
-                    $btn.prop("disabled", false).text("Pay Now");
+                    $btn.prop("disabled", false).html(originalText);
                     let msg = "Error initiating payment. Please try again.";
                     if (error.responseJSON && error.responseJSON.error) {
                         msg = error.responseJSON.error;
@@ -144,6 +431,5 @@
         });
     });
 </script>
-</body>
-</html>
+
 {% include './footer.html' %}

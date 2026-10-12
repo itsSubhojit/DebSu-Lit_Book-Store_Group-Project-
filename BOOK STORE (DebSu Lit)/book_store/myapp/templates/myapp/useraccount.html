@@ -1,42 +1,403 @@
 {% load static %}
 {% include './header.html' %}
 
+<main class="dsl-container" style="padding-top: 2rem; padding-bottom: 4rem;">
 
+    <div class="dsl-profile-card">
+        {% if messages %}
+            {% for msg in messages %}
+                <div style="background-color: {% if msg.tags == 'success' %}#d1fae5{% else %}#fee2e2{% endif %}; color: {% if msg.tags == 'success' %}#065f46{% else %}#dc2626{% endif %}; padding: 0.85rem 1.25rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1.75rem; text-align: center; border: 1px solid {% if msg.tags == 'success' %}#a7f3d0{% else %}#fecaca{% endif %}; font-weight: 500;">
+                    {% if msg.tags == 'success' %}<i class="fas fa-check-circle mr-1"></i>{% else %}<i class="fas fa-exclamation-circle mr-1"></i>{% endif %}
+                    {{ msg }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-<link rel="stylesheet" href="{% static 'myapp/css/USER ACCOUNT.CSS' %}">
-<title>USER ACCOUNT</title>
+        {% if form.errors %}
+            <div style="background-color: #fee2e2; color: #dc2626; padding: 0.85rem 1.25rem; border-radius: 8px; font-size: 0.875rem; margin-bottom: 1.75rem; border: 1px solid #fecaca; font-weight: 500;">
+                <div style="font-weight: 600; margin-bottom: 0.35rem;">
+                    <i class="fas fa-exclamation-circle mr-1"></i> Please check the following:
+                </div>
+                <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.825rem; line-height: 1.5;">
+                    {% for field, error_list in form.errors.items %}
+                        {% for err in error_list %}
+                            <li><strong>{{ field|capfirst }}</strong>: {{ err }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
-    <div class="container mt-5">
-      <h2>Profile</h2>
-      <!-- Profile Picture Section -->
-      <div class="profile-picture-section text-center mb-4">
-        <img src="{% static 'myapp/images/user account icon.png' %}" class="profile-picture img-fluid rounded-circle" alt="Profile Picture">
-        <div class="upload-options">
-          <button onclick="openCamera()">Camera</button>
-          <button onclick="openGallery()">Gallery</button>
+        <form method="post" enctype="multipart/form-data" novalidate id="profileForm">
+            {% csrf_token %}
+
+            <!-- Reader Avatar & Header -->
+            <div style="text-align: center; margin-bottom: 2.25rem;">
+                <div class="dsl-profile-avatar-wrap">
+                    <div class="dsl-profile-avatar-circle" id="avatarPreviewContainer">
+                        {% if request.user.profile_pic %}
+                            <img src="{{ request.user.profile_pic.url }}" alt="{{ request.user.username }}" id="avatarImgPreview" class="dsl-profile-avatar-img" onerror="this.style.display='none'; document.getElementById('avatarFallbackIcon').style.display='block';">
+                            <i class="far fa-user" id="avatarFallbackIcon" style="display: none;"></i>
+                        {% else %}
+                            <i class="far fa-user" id="avatarFallbackIcon"></i>
+                            <img src="" alt="Avatar preview" id="avatarImgPreview" class="dsl-profile-avatar-img" style="display: none;" onerror="this.style.display='none'; document.getElementById('avatarFallbackIcon').style.display='block';">
+                        {% endif %}
+                    </div>
+                    <label for="id_profile_pic" class="dsl-profile-avatar-badge" title="Upload new photo">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                </div>
+                <input type="file" name="profile_pic" id="id_profile_pic" accept="image/*" style="display: none;">
+
+                <span class="dsl-kicker" style="margin-top: 0.75rem;">Reader Profile</span>
+                <h1 class="dsl-cart-headline" style="font-size: 2rem; margin: 0.35rem 0 0.25rem 0;">
+                    {{ request.user.first_name|default:request.user.username }}'s Account
+                </h1>
+                <p style="color: #64748b; font-size: 0.925rem; margin: 0;">
+                    @{{ request.user.username }} · Member of DebSu Lit
+                </p>
+                <small style="display: block; color: #94a3b8; font-size: 0.775rem; margin-top: 0.25rem;">
+                    Click the camera icon to upload a profile photo
+                </small>
+            </div>
+
+            <!-- ==================== SECTION 1: PERSONAL DETAILS ==================== -->
+            <div class="dsl-profile-section">
+                <h2 class="dsl-profile-section-title">
+                    <i class="far fa-id-card"></i> Personal details
+                </h2>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="dsl-form-group">
+                        <label class="dsl-form-label" for="id_first_name">First Name</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <small class="dsl-form-error">{{ form.first_name.errors|striptags }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="dsl-form-group">
+                        <label class="dsl-form-label" for="id_last_name">Last Name</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <small class="dsl-form-error">{{ form.last_name.errors|striptags }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_email">Email Address <span class="text-danger">*</span></label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <small class="dsl-form-error">{{ form.email.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_mobile">Contact Mobile Number <span class="text-danger">*</span></label>
+                    {{ form.mobile }}
+                    <small style="color: #64748b; font-size: 0.775rem; display: block; margin-top: 0.25rem;">
+                        10 digits numeric only (used for order dispatch & recovery)
+                    </small>
+                    {% if form.mobile.errors %}
+                        <small class="dsl-form-error">{{ form.mobile.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ==================== SECTION 2: DELIVERY ADDRESS ==================== -->
+            <div class="dsl-profile-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <h2 class="dsl-profile-section-title" style="margin-bottom: 0;">
+                        <i class="fas fa-map-marker-alt"></i> Default delivery address
+                    </h2>
+                    <span class="dsl-profile-badge">
+                        Auto-applied at checkout
+                    </span>
+                </div>
+                <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 1.25rem;">
+                    Save your delivery address here once, and it will automatically pre-fill when checking out in the cart.
+                </p>
+
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_address_line1">Flat / House / Apartment No. & Building</label>
+                    {{ form.address_line1 }}
+                    {% if form.address_line1.errors %}
+                        <small class="dsl-form-error">{{ form.address_line1.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_address_line2">Street / Road / Area / Landmark</label>
+                    {{ form.address_line2 }}
+                    {% if form.address_line2.errors %}
+                        <small class="dsl-form-error">{{ form.address_line2.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="dsl-form-group">
+                        <label class="dsl-form-label" for="id_city">City</label>
+                        {{ form.city }}
+                        {% if form.city.errors %}
+                            <small class="dsl-form-error">{{ form.city.errors|striptags }}</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="dsl-form-group">
+                        <label class="dsl-form-label" for="id_state">State</label>
+                        {{ form.state }}
+                        {% if form.state.errors %}
+                            <small class="dsl-form-error">{{ form.state.errors|striptags }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_pincode">PIN Code (6 digits)</label>
+                    {{ form.pincode }}
+                    {% if form.pincode.errors %}
+                        <small class="dsl-form-error">{{ form.pincode.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ==================== SECTION 3: CHANGE PASSWORD (OPTIONAL) ==================== -->
+            <div class="dsl-profile-section">
+                <button type="button" id="togglePasswordChange" class="dsl-profile-accordion-toggle">
+                    <span><i class="fas fa-key mr-2"></i> Want to change your password?</span>
+                    <i class="fas fa-chevron-down" id="pwdToggleIcon"></i>
+                </button>
+
+                <div id="passwordChangeCollapse" style="display: none; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px dashed var(--dsl-border-subtle);">
+                    <div class="dsl-form-group">
+                        <label class="dsl-form-label" for="new_password">New Password</label>
+                        <div class="dsl-password-wrap">
+                            <input 
+                                type="password" 
+                                name="new_password" 
+                                id="new_password" 
+                                class="dsl-form-input" 
+                                placeholder="Min 8 chars with uppercase, lowercase, number & symbol (e.g. @User123)"
+                                autocomplete="new-password">
+                            <button type="button" class="dsl-password-toggle-btn" data-target="new_password" aria-label="Toggle password visibility">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        <div id="newPwdFeedback" style="font-size: 0.775rem; margin-top: 0.35rem; display: none;"></div>
+                    </div>
+
+                    <div class="dsl-form-group">
+                        <label class="dsl-form-label" for="confirm_new_password">Confirm New Password</label>
+                        <div class="dsl-password-wrap">
+                            <input 
+                                type="password" 
+                                name="confirm_new_password" 
+                                id="confirm_new_password" 
+                                class="dsl-form-input" 
+                                placeholder="Re-type your new password"
+                                autocomplete="new-password">
+                            <button type="button" class="dsl-password-toggle-btn" data-target="confirm_new_password" aria-label="Toggle password visibility">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        <div id="newPwdMatchMsg" style="font-size: 0.775rem; margin-top: 0.35rem; display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== SECTION 4: SECURITY CONFIRMATION (REQUIRED) ==================== -->
+            <div class="dsl-profile-security-box">
+                <div style="display: flex; gap: 0.75rem; align-items: flex-start; margin-bottom: 0.85rem;">
+                    <i class="fas fa-shield-alt" style="color: #1b2a4a; font-size: 1.35rem; margin-top: 0.15rem;"></i>
+                    <div>
+                        <h3 style="font-size: 1rem; font-weight: 700; color: #1b2a4a; margin: 0 0 0.25rem 0;">
+                            Confirm current account password to save
+                        </h3>
+                        <p style="font-size: 0.825rem; color: #475569; margin: 0;">
+                            For your account's protection, please enter your current account password to authorize profile and address changes.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="dsl-form-group" style="margin-bottom: 0;">
+                    <label class="dsl-form-label" for="current_password">
+                        Current Account Password <span class="text-danger">*</span>
+                    </label>
+                    <div class="dsl-password-wrap">
+                        <input 
+                            type="password" 
+                            name="current_password" 
+                            id="current_password" 
+                            class="dsl-form-input" 
+                            placeholder="Enter current password" 
+                            required
+                            autocomplete="current-password">
+                        <button type="button" class="dsl-password-toggle-btn" data-target="current_password" aria-label="Toggle password visibility">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="dsl-auth-submit-btn" style="margin-top: 1.5rem; font-size: 1rem; padding: 0.95rem;">
+                <i class="fas fa-check-circle mr-1"></i> Save Changes
+            </button>
+        </form>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2.25rem; padding-top: 1.5rem; border-top: 1px solid var(--dsl-border-subtle); font-size: 0.875rem;">
+            <a href="{% url 'my-orders' %}" style="color: var(--dsl-brand-primary); font-weight: 600; text-decoration: none;">
+                <i class="fas fa-box-open mr-1"></i> View my orders
+            </a>
+            <a href="{% url 'logout' %}" style="color: #dc2626; font-weight: 500; text-decoration: none;">
+                <i class="fas fa-sign-out-alt mr-1"></i> Sign out
+            </a>
         </div>
-      </div>
-      <!-- Profile Form -->
-      <form name="updfrm" method="post">
-        {% csrf_token %}
-        <div class="form-row">
-          {% for f in form %}
-          <div class="form-group col-md-6">
-            {{f.label}}
-            {{f}}
-          </div>
-          {% endfor %}
-          
-        </div>
-        
-       
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-      </form>
-      <div class="mt-3 text-center">
-        <p><a href="{% url 'logout' %}">Logout</a></p>
-      </div>
     </div>
 
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Password Visibility Eye Toggle Buttons
+        document.querySelectorAll(".dsl-password-toggle-btn").forEach(function(btn) {
+            btn.addEventListener("click", function() {
+                var targetId = this.getAttribute("data-target");
+                var input = document.getElementById(targetId);
+                var icon = this.querySelector("i");
+                if (!input) return;
+
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+                } else {
+                    input.type = "password";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                }
+            });
+        });
+
+        // 2. Profile Avatar Image Instant Preview
+        var fileInput = document.getElementById("id_profile_pic");
+        var previewImg = document.getElementById("avatarImgPreview");
+        var fallbackIcon = document.getElementById("avatarFallbackIcon");
+
+        if (fileInput) {
+            fileInput.addEventListener("change", function(e) {
+                var file = e.target.files && e.target.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function(evt) {
+                        if (previewImg) {
+                            previewImg.src = evt.target.result;
+                            previewImg.style.display = "block";
+                        }
+                        if (fallbackIcon) {
+                            fallbackIcon.style.display = "none";
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // 3. Mobile Number Numeric Only (max 10 digits)
+        var mobileInput = document.getElementById("id_mobile");
+        if (mobileInput) {
+            mobileInput.setAttribute("maxlength", "10");
+            mobileInput.addEventListener("input", function() {
+                this.value = this.value.replace(/\D/g, "").slice(0, 10);
+            });
+        }
+
+        // 4. PIN Code Numeric Only (max 6 digits)
+        var pinInput = document.getElementById("id_pincode");
+        if (pinInput) {
+            pinInput.setAttribute("maxlength", "6");
+            pinInput.addEventListener("input", function() {
+                this.value = this.value.replace(/\D/g, "").slice(0, 6);
+            });
+        }
+
+        // 5. Toggle Optional Password Change Section
+        var toggleBtn = document.getElementById("togglePasswordChange");
+        var collapseDiv = document.getElementById("passwordChangeCollapse");
+        var toggleIcon = document.getElementById("pwdToggleIcon");
+
+        if (toggleBtn && collapseDiv) {
+            toggleBtn.addEventListener("click", function() {
+                var isHidden = collapseDiv.style.display === "none";
+                collapseDiv.style.display = isHidden ? "block" : "none";
+                if (toggleIcon) {
+                    toggleIcon.className = isHidden ? "fas fa-chevron-up" : "fas fa-chevron-down";
+                }
+            });
+        }
+
+        // 6. Real-time New Password Validation
+        var newPwd = document.getElementById("new_password");
+        var confirmNewPwd = document.getElementById("confirm_new_password");
+        var newPwdFeedback = document.getElementById("newPwdFeedback");
+        var newPwdMatchMsg = document.getElementById("newPwdMatchMsg");
+
+        var strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_+=\-{}\[\]:;"'<>,./]).{8,}$/;
+
+        function validateNewPwd() {
+            if (!newPwd || !newPwdFeedback) return;
+            var val = newPwd.value;
+            if (!val) {
+                newPwdFeedback.style.display = "none";
+                return;
+            }
+            newPwdFeedback.style.display = "block";
+            if (strongRegex.test(val)) {
+                newPwdFeedback.innerHTML = '<span style="color: #059669;">✓ Strong password pattern met</span>';
+            } else {
+                newPwdFeedback.innerHTML = '<span style="color: #dc2626;">✕ Must contain uppercase, lowercase, number, special char (min 8 chars)</span>';
+            }
+        }
+
+        function checkNewMatch() {
+            if (!confirmNewPwd || !newPwdMatchMsg) return;
+            var val1 = newPwd ? newPwd.value : "";
+            var val2 = confirmNewPwd.value;
+            if (!val2) {
+                newPwdMatchMsg.style.display = "none";
+                return;
+            }
+            newPwdMatchMsg.style.display = "block";
+            if (val1 && val1 === val2) {
+                newPwdMatchMsg.innerHTML = '<span style="color: #059669;">✓ Passwords match</span>';
+            } else {
+                newPwdMatchMsg.innerHTML = '<span style="color: #dc2626;">✕ Passwords do not match</span>';
+            }
+        }
+
+        if (newPwd) {
+            newPwd.addEventListener("input", function() {
+                validateNewPwd();
+                checkNewMatch();
+            });
+        }
+        if (confirmNewPwd) {
+            confirmNewPwd.addEventListener("input", checkNewMatch);
+        }
+
+        // 7. Form submission confirmation validation
+        var form = document.getElementById("profileForm");
+        if (form) {
+            form.addEventListener("submit", function(e) {
+                var currentPwd = document.getElementById("current_password");
+                if (currentPwd && !currentPwd.value.trim()) {
+                    e.preventDefault();
+                    alert("Please enter your current account password to authorize saving profile changes.");
+                    currentPwd.focus();
+                }
+            });
+        }
+    });
+</script>
 
 {% include './footer.html' %}
-

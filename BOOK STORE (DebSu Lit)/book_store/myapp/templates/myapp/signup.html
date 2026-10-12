@@ -1,30 +1,316 @@
 {% load static %}
-
-
-<link rel="stylesheet" href="{% static 'myapp/css/signup.css' %}">
-<title>SIGNUP</title>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account – DebSu Lit</title>
+    <!-- Fonts & Tokens -->
+    <link rel="stylesheet" href="{% static 'myapp/css/tokens.css' %}?v=10">
+    <link rel="stylesheet" href="{% static 'myapp/css/dsl-style.css' %}?v=10">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-<body>
-    <div class="signup_form">
-        <form method="post" >
-          {% csrf_token %}
-          <h3>Sign Up</h3>
-         {% for f in frm %}
-          <div class="input_box">
-           {{f.label}}
-           {{f}}
-           {{f.errors | striptags}}
-          </div>
-          {% endfor %}  
-          
-          <button type="submit">Sign Up</button>
-          <p class="login_link">Already have an account? <a href="{% url 'loginpage' %}" target="_blank">Log In</a></p>
-        </form>
-        {% if messages  %}
-        {% for msg in messages %}
-        {{msg}}
-        {% endfor %}
-        {% endif %}
+<body class="dsl-body">
 
-      </div>
+<div class="dsl-auth-split-layout">
+    <!-- Left Column: Editorial Quote Column (Figma Match) -->
+    <aside class="dsl-auth-aside">
+        <a href="{% url 'hmpage' %}" class="dsl-auth-aside-brand">
+            <span class="dsl-auth-aside-badge">D</span>
+            <span>DebSu <i>Lit</i></span>
+        </a>
+
+        <div class="dsl-auth-quote-box">
+            <blockquote class="dsl-auth-quote">
+                “A reader lives a thousand lives before he dies.”
+            </blockquote>
+            <p class="dsl-auth-quote-author">— George R. R. Martin</p>
+        </div>
+
+        <div class="dsl-auth-aside-footer">
+            DebSu Lit &middot; Curated literature and stories from India and beyond
+        </div>
+    </aside>
+
+    <!-- Right Column: Clean Registration Form (Figma Match) -->
+    <main class="dsl-auth-main">
+        <div class="dsl-auth-card">
+            <span class="dsl-kicker" style="color: #1e3562; font-weight: 700; letter-spacing: 0.12em; font-size: 0.75rem;">JOIN THE BOOKSHOP</span>
+            <h1 class="dsl-cart-headline" style="font-size: 2.35rem; margin-bottom: 0.35rem; color: #111827;">
+                Create your account
+            </h1>
+            <p style="color: #64748b; margin-bottom: 1.75rem; font-size: 0.95rem;">
+                Save favourites, track orders, and discover more.
+            </p>
+
+            {% if messages %}
+                {% for msg in messages %}
+                    <div style="background-color: {% if msg.tags == 'success' %}#d1fae5{% else %}#fee2e2{% endif %}; color: {% if msg.tags == 'success' %}#065f46{% else %}#dc2626{% endif %}; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.875rem; margin-bottom: 1.25rem;">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if frm.non_field_errors %}
+                <div style="background-color: #fee2e2; color: #b91c1c; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1.25rem;">
+                    {% for err in frm.non_field_errors %}
+                        <p style="margin: 0;">{{ err }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <!-- Username (Figma: "How should we address you?") -->
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_username">Username</label>
+                    <div class="dsl-input-wrapper">
+                        <input 
+                            type="text" 
+                            name="username" 
+                            id="id_username" 
+                            class="dsl-form-input" 
+                            placeholder="How should we address you?"
+                            value="{{ frm.username.value|default:'' }}"
+                            required 
+                            autofocus>
+                    </div>
+                    {% if frm.username.errors %}
+                        <small style="color: #dc2626; font-size: 0.8rem; display: block; margin-top: 0.25rem;">{{ frm.username.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+
+                <!-- First & Last Name (Compact 2-col row) -->
+                <div class="dsl-form-row-2col">
+                    <div class="dsl-form-group">
+                        <label class="dsl-form-label" for="id_first_name">First name</label>
+                        <input 
+                            type="text" 
+                            name="first_name" 
+                            id="id_first_name" 
+                            class="dsl-form-input" 
+                            placeholder="First name"
+                            value="{{ frm.first_name.value|default:'' }}">
+                        {% if frm.first_name.errors %}
+                            <small style="color: #dc2626; font-size: 0.8rem; display: block; margin-top: 0.25rem;">{{ frm.first_name.errors|striptags }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="dsl-form-group">
+                        <label class="dsl-form-label" for="id_last_name">Last name</label>
+                        <input 
+                            type="text" 
+                            name="last_name" 
+                            id="id_last_name" 
+                            class="dsl-form-input" 
+                            placeholder="Last name"
+                            value="{{ frm.last_name.value|default:'' }}">
+                        {% if frm.last_name.errors %}
+                            <small style="color: #dc2626; font-size: 0.8rem; display: block; margin-top: 0.25rem;">{{ frm.last_name.errors|striptags }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Email Address (Figma: with envelope icon) -->
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_email">Email address</label>
+                    <div class="dsl-input-wrapper">
+                        <span class="dsl-input-icon"><i class="far fa-envelope"></i></span>
+                        <input 
+                            type="email" 
+                            name="email" 
+                            id="id_email" 
+                            class="dsl-form-input" 
+                            style="padding-left: 2.85rem;"
+                            placeholder="you@example.com"
+                            value="{{ frm.email.value|default:'' }}"
+                            required>
+                    </div>
+                    {% if frm.email.errors %}
+                        <small style="color: #dc2626; font-size: 0.8rem; display: block; margin-top: 0.25rem;">{{ frm.email.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Number (Figma: with phone icon & +91 prefix) -->
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_mobile">Mobile number</label>
+                    <div class="dsl-input-wrapper">
+                        <span class="dsl-input-icon">
+                            <i class="fas fa-phone-alt" style="font-size: 0.85rem;"></i>
+                            <span class="dsl-input-icon-prefix">+91</span>
+                        </span>
+                        <input 
+                            type="tel" 
+                            name="mobile" 
+                            id="id_mobile" 
+                            class="dsl-form-input" 
+                            style="padding-left: 5.25rem;"
+                            placeholder="98765 43210"
+                            maxlength="10"
+                            pattern="\d{10}"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10); validatePhone();"
+                            value="{{ frm.mobile.value|default:'' }}"
+                            required>
+                    </div>
+                    <small id="mobile-hint" style="color: #64748b; font-size: 0.78rem; display: block; margin-top: 0.25rem;">Must be exactly 10 digits (numbers only).</small>
+                    {% if frm.mobile.errors %}
+                        <small style="color: #dc2626; font-size: 0.8rem; display: block; margin-top: 0.25rem;">{{ frm.mobile.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+
+                <!-- Password (Figma: "At least 8 characters") -->
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_password1">Password</label>
+                    <div class="dsl-input-wrapper">
+                        <input 
+                            type="password" 
+                            name="password1" 
+                            id="id_password1" 
+                            class="dsl-form-input" 
+                            style="padding-right: 2.75rem;"
+                            placeholder="At least 8 characters (e.g. @User123)"
+                            oninput="validatePasswordStrength(); validatePasswordMatch();"
+                            required>
+                        <button type="button" class="dsl-password-toggle-btn" onclick="togglePasswordVisibility('id_password1', this)" aria-label="Toggle password view">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                    <div id="password-req-msg" style="font-size: 0.78rem; margin-top: 0.35rem; color: #64748b; line-height: 1.4;">
+                        Must include 8+ chars, uppercase, lowercase, number, and special character (e.g. @User123).
+                    </div>
+                    {% if frm.password1.errors %}
+                        <small style="color: #dc2626; font-size: 0.8rem; display: block; margin-top: 0.25rem;">{{ frm.password1.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+
+                <!-- Password Confirmation -->
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_password2">Password confirmation</label>
+                    <div class="dsl-input-wrapper">
+                        <input 
+                            type="password" 
+                            name="password2" 
+                            id="id_password2" 
+                            class="dsl-form-input" 
+                            style="padding-right: 2.75rem;"
+                            placeholder="Confirm your password"
+                            oninput="validatePasswordMatch();"
+                            required>
+                        <button type="button" class="dsl-password-toggle-btn" onclick="togglePasswordVisibility('id_password2', this)" aria-label="Toggle confirm password view">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                    <div id="password-match-msg" style="font-size: 0.8rem; margin-top: 0.35rem; font-weight: 500;"></div>
+                    {% if frm.password2.errors %}
+                        <small style="color: #dc2626; font-size: 0.8rem; display: block; margin-top: 0.25rem;">{{ frm.password2.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+
+                <!-- Remember me Checkbox (Figma match) -->
+                <div class="dsl-checkbox-group">
+                    <input type="checkbox" id="id_remember_me" name="remember_me" checked>
+                    <label for="id_remember_me" class="dsl-checkbox-label">Remember me</label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="btn-submit-signup" class="dsl-auth-submit-btn">
+                    Create account
+                </button>
+            </form>
+
+            <div class="dsl-auth-footer-link">
+                Already have an account? <a href="{% url 'loginpage' %}">Sign in</a>
+            </div>
+
+            <div style="text-align: center; margin-top: 1.25rem;">
+                <a href="{% url 'hmpage' %}" style="font-size: 0.85rem; color: #64748b; text-decoration: none;">
+                    &larr; Back to bookstore
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Password Eye Toggle & Realtime Validation Scripts -->
+<script>
+    function togglePasswordVisibility(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    function validatePhone() {
+        const input = document.getElementById('id_mobile');
+        const hint = document.getElementById('mobile-hint');
+        if (!input) return;
+        if (input.value.length === 10) {
+            hint.textContent = '✓ 10-digit mobile number valid';
+            hint.style.color = '#059669';
+        } else if (input.value.length > 0) {
+            hint.textContent = (10 - input.value.length) + ' more digits required (10 digits total)';
+            hint.style.color = '#dc2626';
+        } else {
+            hint.textContent = 'Must be exactly 10 digits (numbers only).';
+            hint.style.color = '#64748b';
+        }
+    }
+
+    function validatePasswordStrength() {
+        const p1 = document.getElementById('id_password1').value;
+        const msg = document.getElementById('password-req-msg');
+        if (!p1) {
+            msg.textContent = 'Must include 8+ chars, uppercase, lowercase, number, and special character (e.g. @User123).';
+            msg.style.color = '#64748b';
+            return;
+        }
+
+        const hasMinLen = p1.length >= 8;
+        const hasUpper = /[A-Z]/.test(p1);
+        const hasLower = /[a-z]/.test(p1);
+        const hasDigit = /[0-9]/.test(p1);
+        const hasSpecial = /[@$!%*?&#^()_+=\-{}\[\]:;"\'<>,./]/.test(p1);
+
+        if (hasMinLen && hasUpper && hasLower && hasDigit && hasSpecial) {
+            msg.textContent = '✓ Strong password requirement met';
+            msg.style.color = '#059669';
+        } else {
+            const missing = [];
+            if (!hasMinLen) missing.push('8+ chars');
+            if (!hasUpper) missing.push('uppercase');
+            if (!hasLower) missing.push('lowercase');
+            if (!hasDigit) missing.push('number');
+            if (!hasSpecial) missing.push('symbol');
+            msg.textContent = 'Needs: ' + missing.join(', ') + ' (e.g. @User123)';
+            msg.style.color = '#dc2626';
+        }
+    }
+
+    function validatePasswordMatch() {
+        const p1 = document.getElementById('id_password1').value;
+        const p2 = document.getElementById('id_password2').value;
+        const msg = document.getElementById('password-match-msg');
+        if (!p2) {
+            msg.textContent = '';
+            return;
+        }
+
+        if (p1 === p2) {
+            msg.textContent = '✓ Passwords match';
+            msg.style.color = '#059669';
+        } else {
+            msg.textContent = '✕ Passwords do not match';
+            msg.style.color = '#dc2626';
+        }
+    }
+</script>
+
+</body>
+</html>

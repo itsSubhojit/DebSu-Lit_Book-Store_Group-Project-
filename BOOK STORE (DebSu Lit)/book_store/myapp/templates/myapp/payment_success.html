@@ -1,73 +1,48 @@
 {% load static %}
+{% include './header.html' %}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Payment Successful</title>
-    <style>
-        body {
-            background: linear-gradient(to right, deepskyblue, white); /* Warm sunset tones */
-            color: #2c2c2c;
-            font-family: 'Roboto', sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
+<main class="dsl-container">
+    <div class="dsl-status-page">
+        <!-- Mint Green Success Badge with Checkmark -->
+        <div class="dsl-status-icon success">
+            <i class="fas fa-check"></i>
+        </div>
 
-        .success-message {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-top: 50px;
-            color: red; /* Soothing teal tone */
-        }
+        <span class="dsl-status-kicker success">Payment Successful</span>
+        <h1 class="dsl-status-title">Your books are on their way.</h1>
 
-        .quote {
-            font-size: 1.5rem;
-            font-style: italic;
-            margin: 20px 0;
-        }
+        <p class="dsl-status-desc">
+            Thank you, {{ request.user.first_name|default:request.user.username }}. We’ve received your order and will begin packaging your books with care{% if request.user.email %}. Order details will be sent to <strong>{{ request.user.email }}</strong>{% endif %}.
+        </p>
 
-        .thanks {
-            font-size: 1.2rem;
-            margin: 20px 0;
-        }
+        <!-- Clean Editorial Confirmation Box -->
+        <div class="dsl-status-card">
+            <div class="dsl-status-row">
+                <span class="dsl-status-row-label">Payment Status</span>
+                <span class="dsl-status-row-val text-success">
+                    <i class="fas fa-check-circle"></i> Verified via Razorpay
+                </span>
+            </div>
+            <div class="dsl-status-row">
+                <span class="dsl-status-row-label">Estimated Dispatch</span>
+                <span class="dsl-status-row-val">1–2 business days</span>
+            </div>
+            <div class="dsl-status-row">
+                <span class="dsl-status-row-label">Customer</span>
+                <span class="dsl-status-row-val">{{ request.user.get_full_name|default:request.user.username }}</span>
+            </div>
+        </div>
 
-        .animation {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin: 40px auto;
-            animation: fadeIn 2s infinite alternate;
-            color: black; /* Burnt orange for contrast */
-        }
+        <!-- Action CTAs (Figma Match) -->
+        <div class="dsl-status-actions">
+            <a href="{% url 'my-orders' %}" class="dsl-btn-primary">
+                View my orders
+            </a>
+            <a href="{% url 'hmpage' %}" class="dsl-btn-secondary">
+                Back to home
+            </a>
+        </div>
+    </div>
+</main>
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0.5;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        
-    </style>
-</head>
-<body>
-    <h1 class="success-message">Payment Successful!</h1>
-
-    <p class="quote">
-        "Books open doors to endless lives and boundless adventures. Visit us at 
-        <a href="{% url 'hmpage' %}" style="
-            text-decoration: none; 
-            color: white; 
-            font-size: 1.1rem; 
-            border: 2px solid #d84315; 
-            background-color: #d84315; 
-            padding: 5px 10px; 
-            border-radius: 5px;">DebSu Lit</a> 
-        to explore your next journey!"
-    </p>
-    <div class="animation">✨ Payment Processed Smoothly ✨</div>
-
-    
-</body>
-</html>
+{% include './footer.html' %}

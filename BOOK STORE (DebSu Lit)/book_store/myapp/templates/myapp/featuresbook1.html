@@ -1,57 +1,156 @@
 {% load static %}
 {% include './header.html' %}
 
-    <title>Book Details</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'myapp/css/bootstrap.css' %}">
-    <link rel="stylesheet" href="{% static 'myapp/css/featuresbook.css' %}">
-    
-    <div class="home-button">
-        <a href="{% url 'hmpage' %}"><button class="btn btn-secondary"><i class="fa fa-home"></i> Home</button></a>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <img src="{{item.b_img.url}}" alt="Book Photo" class="book-photo">
-            </div>
-            <div class="col-md-8">
-                <h2>{{item.name}}</h2>
-                <p><strong>By:</strong> {{item.author}}</p>
-                <p><strong>Publisher:</strong>{{item.publisher}}</p>
-                <p><strong>Price:</strong>{{item.price}}</p>
-                <p><strong>Rating:</strong> 
-                    <span class="star-rating">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                    </span> 5.0 | 5 Reviews
-                </p>
-                <div class="btn-group">
-                    <a href="{% url 'add_to_cart' item.id %}">
-                        <button class="btn btn-primary">Add to Cart</button>
-                    </a>
-                   
-                </div>
-            </div>
-        </div>
-        <div class="about-book">
-            <h3>About Book</h3>
-            <p>{{item.description}}</p>
-        </div>
-        <div class="book-details">
-            <h3>Book Details</h3>
-            <ul>
-                <li><strong>ISBN-13:</strong>{{item.isbn}}</li>
-                <li><strong>Publisher:</strong> {{item.publisher}}</li>
-                <li><strong>Binding:</strong> {{item.binding}}</li>
-                <li><strong>No of Pages:</strong> {{item.page_no}}</li>
-                <li><strong>Publisher Date:</strong> {{item.pub_date}}</li>
-                <li><strong>Language:</strong> {{item.language}}</li>
-            </ul>
-        </div>
-    </div>
-    
-{% include './footer.html' %}
+<main class="dsl-container">
 
+    <!-- Breadcrumb Navigation (Figma Match) -->
+    <nav class="dsl-breadcrumbs" aria-label="Breadcrumb">
+        <a href="{% url 'hmpage' %}">Home</a>
+        <span class="sep">/</span>
+        {% if item.category %}
+            <a href="{% url 'arrivalspage' item.category.id %}">{{ item.category.cat_name }}</a>
+            <span class="sep">/</span>
+        {% endif %}
+        <span class="current">{{ item.name }}</span>
+    </nav>
+
+    <!-- Main Detail Grid -->
+    <section class="dsl-detail-layout">
+        <!-- Left: 3D Layered Book Cover Presentation -->
+        <div class="dsl-detail-frame-wrapper">
+            <div class="dsl-detail-frame">
+                {% if item.b_img %}
+                    <img src="{{ item.b_img.url }}" alt="{{ item.name }}" class="dsl-detail-cover">
+                {% else %}
+                    <img src="{% static 'myapp/images/placeholder.png' %}" alt="{{ item.name }}" class="dsl-detail-cover">
+                {% endif %}
+            </div>
+            <p class="dsl-detail-caption">Cover may vary by edition</p>
+        </div>
+
+        <!-- Right: Book Info, Pricing, Specs & CTA -->
+        <div class="dsl-detail-info">
+            {% if item.category %}
+                <span class="dsl-detail-cat-badge">{{ item.category.cat_name }}</span>
+            {% endif %}
+
+            <h1 class="dsl-detail-title">{{ item.name }}</h1>
+            <p class="dsl-detail-author">by <strong>{{ item.author }}</strong></p>
+
+            <div class="dsl-detail-price-box">
+                <span class="dsl-detail-price">₹{{ item.price }}</span>
+                <span class="dsl-detail-tax">Inclusive of all taxes</span>
+            </div>
+
+            <!-- Quick Specification Badges Grid -->
+            <div class="dsl-detail-specs-box">
+                <div class="dsl-spec-item">
+                    <span class="dsl-spec-label">Format</span>
+                    <span class="dsl-spec-val">{{ item.binding|default:"Paperback" }}</span>
+                </div>
+                <div class="dsl-spec-item">
+                    <span class="dsl-spec-label">Language</span>
+                    <span class="dsl-spec-val">{{ item.language|default:"English" }}</span>
+                </div>
+                {% if item.page_no %}
+                    <div class="dsl-spec-item">
+                        <span class="dsl-spec-label">Pages</span>
+                        <span class="dsl-spec-val">{{ item.page_no }}</span>
+                    </div>
+                {% endif %}
+                {% if item.isbn %}
+                    <div class="dsl-spec-item">
+                        <span class="dsl-spec-label">ISBN</span>
+                        <span class="dsl-spec-val">{{ item.isbn }}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Delivery Indicator -->
+            <div class="dsl-detail-delivery">
+                <span class="dsl-dispatch-status">
+                    <i class="fas fa-check-circle"></i> Usually dispatched in 1–2 days
+                </span>
+                <span class="dsl-dispatch-sub">
+                    Free delivery on orders above ₹499 across India
+                </span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="dsl-detail-actions">
+                <a href="{% url 'add_to_cart' item.id %}" class="dsl-btn-add-cart-lg" id="add-to-cart-btn">
+                    <i class="fas fa-shopping-bag"></i> Add to cart
+                </a>
+                <a href="{% url 'view_cart' %}" class="dsl-btn-cart-view">
+                    View cart
+                </a>
+            </div>
+
+            <!-- Security Trust Footnote -->
+            <div class="dsl-detail-footnote">
+                <i class="fas fa-shield-alt text-muted"></i> Secure payment via Razorpay · Easy 7-day returns
+            </div>
+        </div>
+    </section>
+
+    <!-- Bottom Split: Synopsis & Full Details Table -->
+    <section class="dsl-detail-split-bottom">
+        <div class="dsl-detail-synopsis-col">
+            <h2 class="dsl-detail-section-title">About this book</h2>
+            <div class="dsl-detail-synopsis">
+                {% if item.description %}
+                    {{ item.description|linebreaks }}
+                {% else %}
+                    <p class="text-muted">A compelling edition curated by DebSu Lit. Description coming soon.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="dsl-detail-specs-col">
+            <h2 class="dsl-detail-section-title">Book details</h2>
+            <table class="dsl-detail-table">
+                <tbody>
+                    <tr>
+                        <th>Publisher</th>
+                        <td>{{ item.publisher|default:"Independent Press" }}</td>
+                    </tr>
+                    {% if item.pub_date %}
+                        <tr>
+                            <th>Published</th>
+                            <td>{{ item.pub_date }}</td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <th>Format</th>
+                        <td>{{ item.binding|default:"Paperback" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Language</th>
+                        <td>{{ item.language|default:"English" }}</td>
+                    </tr>
+                    {% if item.page_no %}
+                        <tr>
+                            <th>Pages</th>
+                            <td>{{ item.page_no }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if item.isbn %}
+                        <tr>
+                            <th>ISBN-13</th>
+                            <td>{{ item.isbn }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if item.category %}
+                        <tr>
+                            <th>Category</th>
+                            <td>{{ item.category.cat_name }}</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+{% include './footer.html' %}

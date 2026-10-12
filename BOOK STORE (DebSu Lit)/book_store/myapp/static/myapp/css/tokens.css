@@ -1,0 +1,79 @@
+/* 
+ * DebSu Lit Design Tokens
+ * Note: Values are approximate, derived from Figma Make prototype inspection.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+:root {
+  /* ==================== COLOR PALETTE ==================== */
+  /* Backgrounds */
+  --dsl-bg-base: #f7f4ee;              /* Warm Ivory page canvas */
+  --dsl-bg-surface: #ffffff;           /* Pure white card backgrounds */
+  --dsl-bg-surface-warm: #faf8f4;      /* Soft warm card/box background */
+  --dsl-bg-topbar: #1b2a4a;            /* Dark announcement top bar */
+  --dsl-bg-footer: #151c28;            /* Deep slate footer */
+  
+  /* Primary & Brand Accents */
+  --dsl-brand-primary: #1b2a4a;        /* Ink Indigo (Buttons, Logo badge) */
+  --dsl-brand-hover: #121e36;          /* Deep dark hover state */
+  --dsl-brand-light: #e9eef7;          /* Soft tinted pill background */
+  --dsl-brand-light-text: #1e3a8a;     /* Pill text color */
+
+  /* Text & Neutral Colors */
+  --dsl-text-primary: #1c2430;        /* Deep slate high-contrast body */
+  --dsl-text-secondary: #5a687c;      /* Muted author & meta text */
+  --dsl-text-muted: #8896a6;          /* Placeholder & subtle captions */
+  --dsl-text-inverse: #ffffff;        /* Pure white for dark backgrounds */
+  --dsl-border-subtle: #e5e1d8;       /* Warm subtle container borders */
+  --dsl-border-dashed: #d1cbbe;       /* Empty cart dashed box border */
+
+  /* Semantic Feedback */
+  --dsl-success: #10b981;              /* Emerald green (Delivery Free / Verified) */
+  --dsl-success-bg: #ecfdf5;           /* Light green pill background */
+  --dsl-danger: #dc2626;               /* Coral red (Remove / Payment Failed) */
+  --dsl-danger-bg: #fef2f2;            /* Light red alert background */
+
+  /* ==================== TYPOGRAPHY ==================== */
+  --dsl-font-serif: 'Lora', Georgia, 'Times New Roman', serif;
+  --dsl-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Font Sizes */
+  --dsl-font-xs: 0.75rem;     /* 12px: Kickers, badges, pills */
+  --dsl-font-sm: 0.875rem;    /* 14px: Author, captions, meta info */
+  --dsl-font-base: 1rem;      /* 16px: Standard body, inputs, buttons */
+  --dsl-font-lg: 1.125rem;    /* 18px: Card titles, item headings */
+  --dsl-font-xl: 1.25rem;     /* 20px: Section kicker subtitles */
+  --dsl-font-2xl: 1.5rem;     /* 24px: Box headlines, cart summary title */
+  --dsl-font-3xl: 2rem;       /* 32px: Page headers, auth titles */
+  --dsl-font-4xl: 2.75rem;    /* 44px: Main editorial headlines */
+  --dsl-font-5xl: 3.5rem;     /* 56px: Hero banner headline */
+
+  /* Line Heights */
+  --dsl-lh-tight: 1.15;
+  --dsl-lh-snug: 1.35;
+  --dsl-lh-normal: 1.6;
+
+  /* ==================== SPACING & RADIUS ==================== */
+  --dsl-space-1: 0.25rem;  /* 4px */
+  --dsl-space-2: 0.5rem;   /* 8px */
+  --dsl-space-3: 0.75rem;  /* 12px */
+  --dsl-space-4: 1rem;     /* 16px */
+  --dsl-space-5: 1.25rem;  /* 20px */
+  --dsl-space-6: 1.5rem;   /* 24px */
+  --dsl-space-8: 2rem;     /* 32px */
+  --dsl-space-10: 2.5rem;  /* 40px */
+  --dsl-space-12: 3rem;    /* 48px */
+  --dsl-space-16: 4rem;    /* 64px */
+
+  --dsl-radius-sm: 4px;
+  --dsl-radius-md: 8px;
+  --dsl-radius-lg: 12px;
+  --dsl-radius-xl: 16px;
+  --dsl-radius-pill: 9999px;
+
+  /* ==================== SHADOWS ==================== */
+  --dsl-shadow-sm: 0 1px 2px 0 rgba(27, 42, 74, 0.05);
+  --dsl-shadow-md: 0 4px 6px -1px rgba(27, 42, 74, 0.08), 0 2px 4px -2px rgba(27, 42, 74, 0.04);
+  --dsl-shadow-lg: 0 10px 15px -3px rgba(27, 42, 74, 0.08), 0 4px 6px -4px rgba(27, 42, 74, 0.04);
+  --dsl-shadow-book: 6px 8px 18px rgba(27, 42, 74, 0.12), 1px 2px 4px rgba(27, 42, 74, 0.06);
+}

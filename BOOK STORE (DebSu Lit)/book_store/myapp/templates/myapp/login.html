@@ -1,49 +1,136 @@
 {% load static %}
-
-
-<link rel="stylesheet" href="{% static 'myapp/css/login.css' %}">
-<title>BOOK LOGIN PAGE</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In – DebSu Lit</title>
+    <!-- Fonts & Tokens -->
+    <link rel="stylesheet" href="{% static 'myapp/css/tokens.css' %}?v=10">
+    <link rel="stylesheet" href="{% static 'myapp/css/dsl-style.css' %}?v=10">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-<body>
-  
-  <div class="login_form">
-    <!-- Login form container -->
-    <form method="post">    
-      <h3>Log in with</h3>
-      <div class="login_option">
-        <!-- Google button -->
-        <div class="option">
-          <a href="#">
-            <img src="{% static 'myapp/images/google logo.jpg' %}" alt="Google" />
-            <span>Google</span>
-          </a>
+<body class="dsl-body">
+
+<div class="dsl-auth-split-layout">
+    <!-- Left Column: Editorial Quote Column (Figma Match) -->
+    <aside class="dsl-auth-aside">
+        <a href="{% url 'hmpage' %}" class="dsl-auth-aside-brand">
+            <span class="dsl-auth-aside-badge">D</span>
+            <span>DebSu <i>Lit</i></span>
+        </a>
+
+        <div class="dsl-auth-quote-box">
+            <blockquote class="dsl-auth-quote">
+                &ldquo;A reader lives a thousand lives before he dies.&rdquo;
+            </blockquote>
+            <p class="dsl-auth-quote-author">&mdash; George R. R. Martin</p>
         </div>
-        <!-- Apple button -->
-        <div class="option">
-          <a href="#">
-            <img src="{% static 'myapp/images/apple logo.jpg' %}" alt="Apple" />
-            <span>Apple</span>
-          </a>
+
+        <div class="dsl-auth-aside-footer">
+            DebSu Lit &middot; Curated literature and stories from India and beyond
         </div>
-      </div>
-      <!-- Login option separator -->
-      <p class="separator">
-        <span>or</span>
-      </p>
-       {% csrf_token %}
-          {% for frm in form %}
-          <div class="input_box">
-            {{frm.label}}
-            {{frm}}
-          </div>
-          {% endfor %}
-           <!-- Login button -->
-          <button type="submit">Log In</button>
-          <p class="sign_up">Don't have an account? <a href="{% url 'signuppage' %}" target="_blank">Sign up</a></p>
-        </form>
-        {% if form.non_fields_errors %}
-         {% for err in form.non_fields_errors %}
-           <p>{{err}}</p>
-         {% endfor %}
-        {% endif %}
-      </div>
+    </aside>
+
+    <!-- Right Column: Clean Authentication Form (Figma Match) -->
+    <main class="dsl-auth-main">
+        <div class="dsl-auth-card">
+            <span class="dsl-kicker">Welcome back</span>
+            <h1 class="dsl-cart-headline" style="font-size: 2.35rem; margin-bottom: 0.35rem;">
+                Sign in to your account
+            </h1>
+            <p style="color: #64748b; margin-bottom: 2rem;">
+                Your next chapter is waiting.
+            </p>
+
+            {% if form.non_field_errors %}
+                <div style="background-color: #fee2e2; color: #dc2626; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.875rem; margin-bottom: 1.5rem;">
+                    {% for err in form.non_field_errors %}
+                        <p style="margin: 0;">{{ err }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_username">Username or Email</label>
+                    <div class="dsl-input-wrapper">
+                        <span class="dsl-input-icon"><i class="far fa-envelope"></i></span>
+                        <input 
+                            type="text" 
+                            name="username" 
+                            id="id_username" 
+                            class="dsl-form-input" 
+                            style="padding-left: 2.85rem;"
+                            placeholder="Username or registered email"
+                            value="{{ login_id|default:'' }}"
+                            required 
+                            autofocus>
+                    </div>
+                </div>
+
+                <div class="dsl-form-group">
+                    <label class="dsl-form-label" for="id_password">Password</label>
+                    <div class="dsl-input-wrapper">
+                        <input 
+                            type="password" 
+                            name="password" 
+                            id="id_password" 
+                            class="dsl-form-input" 
+                            style="padding-right: 2.75rem;"
+                            placeholder="At least 8 characters"
+                            required>
+                        <button type="button" class="dsl-password-toggle-btn" onclick="togglePasswordVisibility('id_password', this)" aria-label="Toggle password view">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0 1.25rem 0;">
+                    <div class="dsl-checkbox-group" style="margin: 0;">
+                        <input type="checkbox" id="id_remember_me" name="remember_me" checked>
+                        <label for="id_remember_me" class="dsl-checkbox-label">Remember me</label>
+                    </div>
+                    <a href="{% url 'forgotpasswordpage' %}" style="font-size: 0.85rem; color: #1e3562; text-decoration: none; font-weight: 500;">
+                        Forgot password?
+                    </a>
+                </div>
+
+                <button type="submit" class="dsl-auth-submit-btn">
+                    Sign in
+                </button>
+            </form>
+
+            <div class="dsl-auth-footer-link">
+                New to DebSu Lit? <a href="{% url 'signuppage' %}">Create an account</a>
+            </div>
+
+            <div style="text-align: center; margin-top: 1.25rem;">
+                <a href="{% url 'hmpage' %}" style="font-size: 0.85rem; color: #64748b; text-decoration: none;">
+                    &larr; Back to bookstore
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function togglePasswordVisibility(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
+
+</body>
+</html>
