@@ -1,3 +1,4 @@
+import logging
 import time
 import razorpay
 import razorpay.errors
@@ -10,6 +11,9 @@ from django.contrib.auth import authenticate, login, logout
 from . forms import MyRegFrm, StdRegFrm, MyChngFrm
 from . models import Student, Category, Item, CartItem, Order
 from django.http import HttpResponse
+
+logger = logging.getLogger(__name__)
+
 
 
 # Create your views here.
@@ -33,7 +37,8 @@ def useraccount(request):
                 try:
                     form.save()
                     messages.success(request,'Profile Update successfully')
-                except Exception as e:
+                except Exception:
+                    logger.exception("Failed to update profile for user %s", request.user.username)
                     messages.error(request, 'Profile Could Not Update successfully')
         else:
             form=MyChngFrm(instance=request.user)
@@ -72,7 +77,8 @@ def signup(request):
             try:
                 form.save()
                 messages.success(request, 'Your registration is succesfull')
-            except Exception as e:
+            except Exception:
+                logger.exception("Failed to save new user registration")
                 messages.error(request, 'Your registration is not successfull')
     else:
         form=MyRegFrm()
@@ -130,7 +136,8 @@ def stdUpd(request,id):
         try:
             form.save()
             messages.success(request, 'Student Details Updated Successfully')
-        except Exception as e:
+        except Exception:
+            logger.exception("Failed to update student details for ID %s", id)
             messages.error(request, 'Student Details Not Updated Successfully')
         return redirect('/stdlist')
     return render(request, 'myapp/stdUpd.html', {'form':form})
@@ -194,7 +201,8 @@ def initiate_payment(request):
         amount_in_paise = int(total_price * 100)
 
         if not settings.RAZORPAY_API_KEY or not settings.RAZORPAY_API_SECRET:
-            return JsonResponse({"error": "Razorpay payment keys are not configured. Please set them in your .env file."}, status=500)
+            logger.error("Razorpay API credentials are not configured in settings.")
+            return JsonResponse({"error": "Payment service is currently unavailable. Please try again later."}, status=500)
 
         client = razorpay.Client(auth=(settings.RAZORPAY_API_KEY, settings.RAZORPAY_API_SECRET))
 
@@ -212,7 +220,8 @@ def initiate_payment(request):
         try:
             order = client.order.create(data=payment_data)
         except Exception as e:
-            return JsonResponse({"error": f"Failed to initiate order with Razorpay: {str(e)}"}, status=500)
+            logger.error("Failed to initiate order with Razorpay: %s", e, exc_info=True)
+            return JsonResponse({"error": "Failed to initiate payment. Please try again later."}, status=500)
 
         # Store pending address in session for payment verification
         request.session['pending_order_address'] = address
@@ -264,10 +273,12 @@ def verify_payment(request):
         # Cryptographically verify that payment was authorized by Razorpay
         try:
             client.utility.verify_payment_signature(params_dict)
-        except razorpay.errors.SignatureVerificationError:
+        except razorpay.errors.SignatureVerificationError as e:
+            logger.warning("Payment signature verification failed for order %s: %s", razorpay_order_id, e)
             return JsonResponse({"status": "failure", "message": "Payment signature verification failed."}, status=400)
         except Exception as e:
-            return JsonResponse({"status": "failure", "message": f"Verification error: {str(e)}"}, status=400)
+            logger.error("Unexpected error during payment verification for order %s: %s", razorpay_order_id, e, exc_info=True)
+            return JsonResponse({"status": "failure", "message": "Payment verification failed. Please try again or contact support."}, status=400)
 
         # Payment verified: create orders and clear cart
         cart_items = CartItem.objects.filter(user=request.user)
