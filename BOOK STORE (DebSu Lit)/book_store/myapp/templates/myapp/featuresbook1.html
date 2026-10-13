@@ -211,7 +211,7 @@
                     error: function(xhr) {
                         $cartBtn.prop('disabled', false);
                         if (xhr.status === 401) {
-                            window.location.href = '/login?next=/featuresbook1/' + itemId + '/';
+                            window.location.href = '/login';
                         } else {
                             alert('Could not update cart. Please try again.');
                             $cartBtnText.text(inCart ? 'Go to cart' : 'Add to cart');

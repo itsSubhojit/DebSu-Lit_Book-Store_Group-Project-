@@ -284,7 +284,7 @@ def add_to_cart(request, item_id):
 
 def buy_now(request, item_id):
     if not request.user.is_authenticated:
-        return redirect(f'/login?next=/featuresbook1/{item_id}/')
+        return redirect('loginpage')
 
     item = Item.objects.get(id=item_id)
     cart_item, created = CartItem.objects.get_or_create(item=item, user=request.user)

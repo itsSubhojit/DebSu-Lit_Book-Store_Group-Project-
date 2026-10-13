@@ -8,18 +8,45 @@
 [![Razorpay](https://img.shields.io/badge/Razorpay-Secure%20Checkout-0C2340?logo=razorpay&logoColor=white)](https://razorpay.com/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-4.6-7952B3?logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
 
-**DebSu Lit** is a production-ready, full-featured e-commerce web application tailored for browsing, purchasing, and managing books online. Built with a scalable Django backend, responsive Bootstrap interface, secure Razorpay payment gateway, Neon serverless PostgreSQL database, and Cloudinary media CDN.
+**DebSu Lit** is a production-ready, full-featured e-commerce bookstore web application crafted with a scalable Django backend, modern glassmorphic UI, secure Razorpay payment gateway, Neon serverless PostgreSQL database, and Cloudinary media CDN.
 
 ---
 
 ## ✨ Features
 
-- **📖 Catalog & Discovery:** Dynamic book categorization (Epics, Novels, Thrillers, etc.), new arrivals, featured showcases, and detailed book specifications (ISBN, publisher, page count, binding).
-- **🛒 Shopping Cart System:** Real-time item additions, quantity management, dynamic server-side subtotal calculations, and item removal.
-- **💳 Secure Razorpay Integration:** End-to-end payment workflow with server-side price calculation, cryptographic HMAC-SHA256 signature verification (`/verify-payment/`), and transactional order generation.
+- **📖 Curated Catalog & Discovery:** Dynamic book categorization (Epics, Novels, Thrillers, etc.), new arrivals, featured showcases, and detailed book specifications (ISBN-13, publisher, language, page count, binding).
+- **⚡ Interactive Book Details & Dual CTAs:**
+  - Dynamic quantity stepper (`-` / `+`) with real-time numeric adjustments.
+  - Asynchronous AJAX **"Add to Cart"** that updates the header cart badge in real-time and transitions button state to **"Go to Cart"** (with checkmark and in-cart indicators).
+  - High-converting **"Buy Now"** CTA that saves selected quantity to cart and immediately redirects to checkout.
+- **🛒 Smart Shopping Cart & Flexible Checkout:**
+  - Real-time quantity adjustments and server-side subtotal calculations.
+  - Multi-address selection: use saved profile address or enter custom address with 1-click option to save to user profile.
+  - **"Booking for someone else"** gift workflow with recipient name, 10-digit mobile validation, and optional gift note.
+- **💳 Secure Razorpay Two-Phase Checkout:**
+  - Server-side price calculation in paise (INR) preventing tampering.
+  - Cryptographic HMAC-SHA256 signature verification (`/verify-payment/`).
+  - Clear **Razorpay Test Mode Helper Notice** in checkout explaining test card simulator OTP (`123456` or `Skip OTP`).
+- **📦 Order History & Random Order ID Generation:**
+  - Unique random order IDs (`DSL-ORD-XXXXXX`) generated for each transaction and indexed in the database.
+  - Expandable **"Order details"** drawer breakdown for every order:
+    - **Payment & Price Summary:** item rate, quantity, item subtotal, free shipping, total paid, payment gateway, transaction ref (`pay_xxx`), and verification status.
+    - **Shipping & Fulfillment:** order confirmed status, 24–48 hr dispatch timeline, and full delivery address.
+- **🎨 Glassmorphic Responsive Navigation:**
+  - Floating frosted-glass mobile navigation drawer (`backdrop-filter: blur(12px)`).
+  - Responsive 3-bar animated hamburger toggle strictly visible on mobile & tablet (`< 992px`) and hidden on desktop (`≥ 992px`).
+  - Smooth micro-animations for hover, active, and open drawer transitions.
+- **👤 Modern Customer Authentication & Security:**
+  - `CustomUser` model supporting username or email login.
+  - Real-time client-side & server-side validation (unique username, unique email, 10-digit mobile, complex password rule: min 8 characters, uppercase, lowercase, number, special char).
+  - Password visibility toggle (eye icon) on login, signup, user account, and forgot password.
+  - Live password confirmation match feedback.
+  - Profile management requiring current password confirmation before updates.
+- **⚡ High Performance & Zero N+1 Queries:**
+  - All database queries optimized with `.select_related('item', 'item__category')`.
+  - Header cart counter calculated via database aggregation (`aggregate(total=Sum('quantity'))`).
 - **☁️ Cloudinary Media CDN:** Cloud-hosted, high-performance book covers organized under the dedicated `DebSu-Lit_Book-Store_Group-Project` folder.
 - **🗄️ Universal Database Engine:** Compatible with Neon PostgreSQL (Production), MySQL (XAMPP/Local), and SQLite with automatic environment switching.
-- **👤 User Management:** Custom authentication model with mobile verification, profile update portal, order history tracking, and session controls.
 - **🎓 Student Registration Portal:** Dedicated CRUD interface for student record registration, listing, updates, and deletion.
 - **🛡️ Custom Admin Suite:** Django administration interface featuring book cover preview thumbnails, order management, and user controls.
 
@@ -35,30 +62,36 @@
 
 ```text
 DebSu-Lit_Book-Store_Group-Project/
-├── .env.example                       # Environment variables template
-├── .gitignore                         # Git ignore rules (protects .env, staticfiles, etc.)
-├── build.sh                           # Production cloud build script (pip, collectstatic, migrate)
-├── manage.py                          # Root management script (run directly from repo root)
-├── Procfile                           # Production process configuration for Gunicorn
-├── requirements.txt                   # Production & development dependencies
-├── runtime.txt                        # Python 3.12.8 runtime specifier
-├── wsgi.py                            # Production WSGI entrypoint
+├── .env                              # Active local environment variables (ignored by git)
+├── .env.example                      # Environment variables template
+├── .gitignore                        # Git ignore rules (protects .env, staticfiles, etc.)
+├── build.sh                          # Production cloud build script (pip, collectstatic, migrate)
+├── manage.py                         # Root management script (run directly from repo root)
+├── Procfile                          # Production process configuration for Gunicorn
+├── PROJECT_OVERVIEW.md               # Master technical dossier & LLM prompt templates
+├── README.md                         # Repository documentation and runbook
+├── WALKTHROUGH.md                    # Detailed feature walkthrough & testing guide
+├── requirements.txt                  # Production & development dependencies
+├── runtime.txt                       # Python 3.12.8 runtime specifier
+├── wsgi.py                           # Production WSGI entrypoint
 ├── Assets/
-│   └── diagram.png                    # System Architecture Diagram
+│   └── diagram.png                   # System Architecture Diagram
 └── BOOK STORE (DebSu Lit)/
     └── book_store/
-        ├── manage.py                  # Project CLI management script
-        ├── book_store/                # Django core (settings, URLs, WSGI)
-        │   ├── settings.py            # Environment-driven settings (WhiteNoise, Cloudinary, DB)
-        │   ├── urls.py                # Main URL routing
-        │   └── wsgi.py                # Internal WSGI config
-        └── myapp/                     # Main bookstore application
-            ├── models.py              # CustomUser, Category, Item, CartItem, Order, Student
-            ├── views.py               # E-commerce controllers & payment verification
-            ├── urls.py                # App route mappings
-            ├── forms.py               # Registration and user update forms
-            ├── templates/myapp/       # Responsive Bootstrap HTML templates
-            └── static/myapp/          # CSS, JS, and image assets
+        ├── manage.py                 # Inner project CLI management script
+        ├── book_store/               # Django core package
+        │   ├── settings.py           # Environment-driven settings (WhiteNoise, Cloudinary, DB)
+        │   ├── urls.py               # Main URL routing
+        │   └── wsgi.py               # Internal WSGI config
+        └── myapp/                    # Bookstore application
+            ├── models.py             # CustomUser, Category, Item, CartItem, Order, Student
+            ├── views.py              # Controllers, cart logic, payment & order management
+            ├── urls.py               # 27 active application routes
+            ├── forms.py              # Registration, profile update, and student forms
+            ├── context_processors.py # Optimized global category & cart badge counter
+            ├── admin.py              # Django admin registrations with thumbnails
+            ├── templates/myapp/      # 21 modern templates with glassmorphic styles
+            └── static/myapp/         # CSS design tokens, dsl-style.css, JS scripts, icons
 ```
 
 ---
@@ -82,7 +115,7 @@ Copy `.env.example` to `.env`:
 ```bash
 cp .env.example .env
 ```
-Update your credentials in `.env` (or keep defaults to use local settings).
+Update your credentials in `.env` (or keep defaults to use local SQLite settings).
 
 ### 4. Database Setup & Migrations
 Run migrations directly from the repository root:
@@ -144,25 +177,29 @@ Enter your desired username (e.g. `admin`), email, and password. This immediatel
 - **Local:** `http://127.0.0.1:8000/admin/`
 - **Render Production:** `https://<your-render-subdomain>.onrender.com/admin/`
 
-Log in using the superuser credentials created above to manage Books, Categories, Orders, Cart items, and Users.
-
 ---
 
 ## 🔗 Key Endpoints
 
-| Endpoint | Description |
-|---|---|
-| `/` | Storefront Homepage |
-| `/arrivals/<id>/` | Category filter showcase |
-| `/featuresbook1/<id>/` | Book specifications & details |
-| `/cart` | Shopping cart view |
-| `/initiate-payment/` | Backend order creation & price calculation |
-| `/verify-payment/` | Cryptographic Razorpay signature verification |
-| `/myorder/` | User order history |
-| `/useraccount` | User profile update portal |
-| `/login` & `/signup` | Customer authentication |
-| `/stdlist` | Student CRUD management |
-| `/admin/` | Django Administration panel |
+| Endpoint | Method | Description |
+|---|---|---|
+| `/` | GET | Storefront Homepage with category filters |
+| `/arrivals/<id>/` | GET | Category filtered books showcase |
+| `/featuresbook1/<item_id>/` | GET | Book details, quantity stepper, and dual CTAs |
+| `/add/<item_id>/` | GET/POST | Add item to cart with quantity & AJAX support |
+| `/buy-now/<item_id>/` | GET/POST | Sets item quantity and redirects directly to cart |
+| `/cart` | GET | Shopping cart with saved address / gift checkout |
+| `/remove/<id>` | GET | Remove cart item |
+| `/initiate-payment/` | POST | Secure server-side Razorpay order initiation |
+| `/verify-payment/` | POST | Cryptographic HMAC-SHA256 signature verification & order creation |
+| `/payment-success/` | GET | Payment confirmation and celebration screen |
+| `/payment-failed/` | GET | Payment failure notice and retry option |
+| `/myorder/` | GET | Order history with random Order ID & expandable order details |
+| `/useraccount` | GET/POST | User profile & saved delivery address portal |
+| `/login` & `/signup` | GET/POST | Customer authentication (username/email login) |
+| `/forgotpassword` | GET/POST | Password reset workflow |
+| `/stdlist` | GET | Student CRUD management portal |
+| `/admin/` | GET/POST | Django Administration panel |
 
 ---
 
