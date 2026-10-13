@@ -29,6 +29,8 @@ urlpatterns=[
     path("payment-failed/", views.payment_failed, name="payment_failed"),
     path("retry-payment/", views.view_cart, name="retry_payment"),
     path("myorder/", views.myOrders, name="my-orders"),
+    path("health/", views.health_check, name="health_check"),
+    path("health", views.health_check, name="health_check_no_slash"),
 ]
 
 
