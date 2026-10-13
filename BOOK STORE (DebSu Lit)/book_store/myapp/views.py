@@ -31,7 +31,6 @@ def health_check(request):
     """
     db_status = "connected"
     is_healthy = True
-    error_detail = None
 
     try:
         with connection.cursor() as cursor:
@@ -40,8 +39,7 @@ def health_check(request):
     except Exception as e:
         db_status = "disconnected"
         is_healthy = False
-        error_detail = str(e)
-        logger.error("Health check database probe failed: %s", e)
+        logger.error("Health check database probe failed: %s", e, exc_info=True)
 
     payload = {
         "status": "healthy" if is_healthy else "unhealthy",
@@ -50,8 +48,8 @@ def health_check(request):
         "service": "DebSu-Lit Book Store",
         "version": "1.0.0",
     }
-    if error_detail:
-        payload["error"] = error_detail
+    if not is_healthy:
+        payload["error"] = "Database service unavailable"
 
     status_code = 200 if is_healthy else 503
     return JsonResponse(payload, status=status_code)
