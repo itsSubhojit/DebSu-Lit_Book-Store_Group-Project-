@@ -76,14 +76,39 @@
                 </span>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="dsl-detail-actions">
-                <a href="{% url 'add_to_cart' item.id %}" class="dsl-btn-add-cart-lg" id="add-to-cart-btn">
-                    <i class="fas fa-shopping-bag"></i> Add to cart
-                </a>
-                <a href="{% url 'view_cart' %}" class="dsl-btn-cart-view">
-                    View cart
-                </a>
+            <!-- Quantity Selector & Action Buttons -->
+            <div class="dsl-detail-purchase-panel">
+                {% csrf_token %}
+                <div class="dsl-qty-wrapper">
+                    <label class="dsl-qty-label" for="detailQtyInput">Quantity:</label>
+                    <div class="dsl-qty-stepper">
+                        <button type="button" class="dsl-qty-btn" id="qtyMinusBtn" aria-label="Decrease quantity">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" id="detailQtyInput" class="dsl-qty-field" value="{% if in_cart and in_cart_qty %}{{ in_cart_qty }}{% else %}1{% endif %}" min="1" max="99" readonly>
+                        <button type="button" class="dsl-qty-btn" id="qtyPlusBtn" aria-label="Increase quantity">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <span class="dsl-in-cart-indicator" id="inCartIndicator" style="{% if not in_cart %}display: none;{% endif %}">
+                        <i class="fas fa-check-circle"></i> In your cart
+                    </span>
+                </div>
+
+                <!-- Dual Action CTAs -->
+                <div class="dsl-detail-actions">
+                    <button type="button" class="dsl-btn-add-cart-lg {% if in_cart %}is-in-cart{% endif %}" id="addToCartBtn" data-item-id="{{ item.id }}" data-in-cart="{% if in_cart %}true{% else %}false{% endif %}">
+                        {% if in_cart %}
+                            <i class="fas fa-shopping-bag"></i> <span id="cartBtnText">Go to cart</span>
+                        {% else %}
+                            <i class="fas fa-shopping-bag"></i> <span id="cartBtnText">Add to cart</span>
+                        {% endif %}
+                    </button>
+
+                    <button type="button" class="dsl-btn-buy-now" id="buyNowBtn" data-item-id="{{ item.id }}">
+                        <i class="fas fa-bolt"></i> Buy now
+                    </button>
+                </div>
             </div>
 
             <!-- Security Trust Footnote -->
@@ -92,6 +117,118 @@
             </div>
         </div>
     </section>
+
+    <!-- Book Detail Quantity & Cart Handler Scripts -->
+    <script>
+        $(document).ready(function() {
+            var $qtyInput = $('#detailQtyInput');
+            var $cartBtn = $('#addToCartBtn');
+            var $cartBtnText = $('#cartBtnText');
+            var $inCartIndicator = $('#inCartIndicator');
+            var itemId = "{{ item.id }}";
+            var inCart = {% if in_cart %}true{% else %}false{% endif %};
+            var initialQty = parseInt($qtyInput.val(), 10) || 1;
+
+            // Quantity Stepper Controls
+            $('#qtyMinusBtn').on('click', function() {
+                var current = parseInt($qtyInput.val(), 10) || 1;
+                if (current > 1) {
+                    $qtyInput.val(current - 1);
+                    onQtyChange();
+                }
+            });
+
+            $('#qtyPlusBtn').on('click', function() {
+                var current = parseInt($qtyInput.val(), 10) || 1;
+                if (current < 99) {
+                    $qtyInput.val(current + 1);
+                    onQtyChange();
+                }
+            });
+
+            function onQtyChange() {
+                var newQty = parseInt($qtyInput.val(), 10);
+                if (inCart && newQty !== initialQty) {
+                    $cartBtn.removeClass('is-in-cart');
+                    $cartBtnText.text('Update cart (' + newQty + ')');
+                } else if (inCart) {
+                    $cartBtn.addClass('is-in-cart');
+                    $cartBtnText.text('Go to cart');
+                }
+            }
+
+            // Add to Cart / Update Cart / Go to Cart
+            $cartBtn.on('click', function(e) {
+                e.preventDefault();
+                var currentText = $cartBtnText.text().trim();
+
+                // If already in cart and user didn't change quantity, navigate directly to cart
+                if (inCart && currentText === 'Go to cart') {
+                    window.location.href = "{% url 'view_cart' %}";
+                    return;
+                }
+
+                var qty = parseInt($qtyInput.val(), 10) || 1;
+                var csrfToken = $('input[name=csrfmiddlewaretoken]').val();
+
+                $cartBtn.prop('disabled', true);
+                $cartBtnText.html('<i class="fas fa-spinner fa-spin"></i> Updating...');
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/add/' + itemId + '/',
+                    data: {
+                        quantity: qty,
+                        action: 'set',
+                        ajax: '1',
+                        csrfmiddlewaretoken: csrfToken
+                    },
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function(response) {
+                        $cartBtn.prop('disabled', false);
+                        if (response.status === 'success') {
+                            inCart = true;
+                            initialQty = qty;
+                            $cartBtn.addClass('is-in-cart');
+                            $cartBtnText.text('Go to cart');
+                            $inCartIndicator.slideDown(150);
+
+                            // Update header cart badges dynamically
+                            if (response.cart_count !== undefined) {
+                                var $badges = $('.dsl-cart-badge');
+                                if ($badges.length > 0) {
+                                    $badges.text(response.cart_count).show();
+                                } else {
+                                    $('.dsl-cart-btn').append('<span class="dsl-cart-badge">' + response.cart_count + '</span>');
+                                }
+                            }
+                        } else if (response.redirect) {
+                            window.location.href = response.redirect;
+                        }
+                    },
+                    error: function(xhr) {
+                        $cartBtn.prop('disabled', false);
+                        if (xhr.status === 401) {
+                            window.location.href = '/login?next=/featuresbook1/' + itemId + '/';
+                        } else {
+                            alert('Could not update cart. Please try again.');
+                            $cartBtnText.text(inCart ? 'Go to cart' : 'Add to cart');
+                        }
+                    }
+                });
+            });
+
+            // Buy Now: update cart quantity and redirect directly to checkout/cart
+            $('#buyNowBtn').on('click', function(e) {
+                e.preventDefault();
+                var qty = parseInt($qtyInput.val(), 10) || 1;
+                var buyUrl = "{% url 'buy_now' item.id %}?quantity=" + qty;
+                window.location.href = buyUrl;
+            });
+        });
+    </script>
 
     <!-- Bottom Split: Synopsis & Full Details Table -->
     <section class="dsl-detail-split-bottom">

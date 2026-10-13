@@ -57,6 +57,7 @@ class CartItem(models.Model):
      
 
 class Order(models.Model):
+    order_id = models.CharField(max_length=50, null=True, blank=True, db_index=True)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=0)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -64,6 +65,9 @@ class Order(models.Model):
     payment_status=models.CharField(max_length=255)
     payment_id=models.CharField(max_length=255)
     address=models.TextField()
+
+    def __str__(self):
+        return f"{self.order_id or self.id} - {self.item.name} ({self.user.username})"
 
 
 

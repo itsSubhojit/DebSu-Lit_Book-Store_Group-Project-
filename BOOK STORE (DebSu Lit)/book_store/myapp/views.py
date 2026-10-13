@@ -1,9 +1,12 @@
 import logging
+import random
 import re
+import string
 import time
 import razorpay
 import razorpay.errors
 from django.conf import settings
+from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -224,36 +227,92 @@ def stdAdmin(request):
     allfeatured=Category.objects.all()
     return render(request, 'myapp/stdAdmin.html', {'allfeatured':allfeatured}) 
 
-def featuresbook1(request,item_id):
-    item=Item.objects.get(id=item_id)
-    return render(request, 'myapp/featuresbook1.html', {'item':item})
+def featuresbook1(request, item_id):
+    item = Item.objects.select_related('category').get(id=item_id)
+    in_cart_qty = 0
+    if request.user.is_authenticated:
+        cart_entry = CartItem.objects.filter(item=item, user=request.user).first()
+        if cart_entry:
+            in_cart_qty = cart_entry.quantity
+    return render(request, 'myapp/featuresbook1.html', {
+        'item': item,
+        'in_cart_qty': in_cart_qty,
+        'in_cart': in_cart_qty > 0,
+    })
 
 def add_to_cart(request, item_id):
-	if request.user.is_authenticated:
-		item = Item.objects.get(id=item_id)
-		cart_item, created = CartItem.objects.get_or_create(item=item, 
-                                                        user=request.user)
-		cart_item.quantity += 1
-		cart_item.save()
-		return redirect('/cart')
-	else:
-		return redirect('/login')
+    if not request.user.is_authenticated:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == '1' or request.GET.get('ajax') == '1':
+            return JsonResponse({'status': 'error', 'message': 'Please log in to add items to your cart.', 'redirect': '/login'}, status=401)
+        return redirect('/login')
+
+    item = Item.objects.get(id=item_id)
+    cart_item, created = CartItem.objects.get_or_create(item=item, user=request.user)
+
+    try:
+        qty_param = int(request.POST.get('quantity') or request.GET.get('quantity') or 1)
+    except (ValueError, TypeError):
+        qty_param = 1
+
+    qty_param = max(1, qty_param)
+
+    action = request.POST.get('action') or request.GET.get('action')
+    if action == 'set':
+        cart_item.quantity = qty_param
+    elif created:
+        cart_item.quantity = qty_param
+    else:
+        cart_item.quantity += qty_param
+
+    cart_item.save()
+
+    total_count = CartItem.objects.filter(user=request.user).aggregate(total=Sum('quantity'))['total'] or 0
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == '1' or request.GET.get('ajax') == '1':
+        return JsonResponse({
+            'status': 'success',
+            'cart_count': total_count,
+            'item_quantity': cart_item.quantity,
+            'item_id': item.id,
+            'message': f'"{item.name}" added to cart!'
+        })
+
+    if request.POST.get('buy_now') == '1' or request.GET.get('buy_now') == '1':
+        return redirect('/cart')
+
+    return redirect('/cart')
+
+def buy_now(request, item_id):
+    if not request.user.is_authenticated:
+        return redirect(f'/login?next=/featuresbook1/{item_id}/')
+
+    item = Item.objects.get(id=item_id)
+    cart_item, created = CartItem.objects.get_or_create(item=item, user=request.user)
+
+    try:
+        qty_param = int(request.POST.get('quantity') or request.GET.get('quantity') or 1)
+    except (ValueError, TypeError):
+        qty_param = 1
+
+    qty_param = max(1, qty_param)
+    cart_item.quantity = max(cart_item.quantity, qty_param)
+    cart_item.save()
+
+    return redirect('/cart')
 
 def view_cart(request):
     if request.user.is_authenticated:
-          cart_items = CartItem.objects.filter(user=request.user)
-          total_price = sum(int(item.item.price) * int(item.quantity) for item in cart_items)
-          total_price = int(total_price)
-          return render(request, 'myapp/cart.html', {
-              'cart_items': cart_items,
-              'total_price': total_price,
-              'saved_user': request.user
-          })
+        cart_items = CartItem.objects.filter(user=request.user).select_related('item', 'item__category')
+        total_price = sum(int(ci.item.price) * int(ci.quantity) for ci in cart_items)
+        return render(request, 'myapp/cart.html', {
+            'cart_items': cart_items,
+            'total_price': total_price,
+            'saved_user': request.user
+        })
     else:
         return redirect('/login')
-    
-     
-def remove_cart(request,id):
+
+def remove_cart(request, id):
     if request.user.is_authenticated:
         cart_item = CartItem.objects.get(id=id, user=request.user)
         cart_item.delete()
@@ -384,10 +443,14 @@ def verify_payment(request):
             logger.error("Unexpected error during payment verification for order %s: %s", razorpay_order_id, e, exc_info=True)
             return JsonResponse({"status": "failure", "message": "Payment verification failed. Please try again or contact support."}, status=400)
 
-        # Payment verified: create orders and clear cart
-        cart_items = CartItem.objects.filter(user=request.user)
+        # Payment verified: generate a unique random order ID for this checkout transaction
+        random_order_number = random.randint(100000, 999999)
+        generated_order_id = f"DSL-ORD-{random_order_number}"
+
+        cart_items = CartItem.objects.filter(user=request.user).select_related('item')
         for cart in cart_items:
             Order.objects.create(
+                order_id=generated_order_id,
                 user=request.user,
                 item=cart.item,
                 quantity=cart.quantity,
@@ -401,8 +464,9 @@ def verify_payment(request):
         # Clean up session keys
         request.session.pop("pending_order_address", None)
         request.session.pop("pending_razorpay_order_id", None)
+        request.session["last_order_id"] = generated_order_id
 
-        return JsonResponse({"status": "success", "message": "Payment verified successfully!"})
+        return JsonResponse({"status": "success", "message": "Payment verified successfully!", "order_id": generated_order_id})
 
     return JsonResponse({"status": "failure", "message": "Invalid request method."}, status=405)
 
@@ -415,7 +479,7 @@ def payment_failed(request):
 
 def myOrders(request):
     if request.user.is_authenticated:
-        allord=Order.objects.filter(user=request.user)
-        return render(request, 'myapp/viewOrders.html',{'orderItems':allord})
+        allord = Order.objects.filter(user=request.user).select_related('item', 'item__category').order_by('-date_ordered', '-id')
+        return render(request, 'myapp/viewOrders.html', {'orderItems': allord})
     else:
         return redirect('/login')

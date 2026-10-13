@@ -20,6 +20,7 @@ urlpatterns=[
     path('stdAdmin', views.stdAdmin, name='std-Admin'),
     path('featuresbook1/<int:item_id>/', views.featuresbook1, name='featuresbook1page'),
     path('add/<int:item_id>/', views.add_to_cart, name='add_to_cart'),
+    path('buy-now/<int:item_id>/', views.buy_now, name='buy_now'),
     path('cart', views.view_cart, name='view_cart'),
     path('remove/<int:id>', views.remove_cart, name='remove_cart'),
     path("initiate-payment/", views.initiate_payment, name="initiate_payment"),

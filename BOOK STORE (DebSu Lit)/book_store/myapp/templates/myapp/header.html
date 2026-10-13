@@ -3,15 +3,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>DebSu Lit – Curated Bookstore</title>
     <!-- Bootstrap 4.6 & Icons -->
     <link rel="stylesheet" href="{% static 'myapp/css/bootstrap.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- DebSu Lit Modern Design Tokens & Base Styles -->
-    <link rel="stylesheet" href="{% static 'myapp/css/tokens.css' %}?v=11">
-    <link rel="stylesheet" href="{% static 'myapp/css/dsl-style.css' %}?v=11">
+    <link rel="stylesheet" href="{% static 'myapp/css/tokens.css' %}?v=12">
+    <link rel="stylesheet" href="{% static 'myapp/css/dsl-style.css' %}?v=20">
     <!-- jQuery Core (must be loaded before inline scripts) -->
     <script src="{% static 'myapp/js/jquery.min.js' %}"></script>
 </head>
@@ -27,7 +27,7 @@
                     <span class="dsl-brand-name">DebSu <span>Lit</span></span>
                 </a>
 
-                <!-- Navigation Links -->
+                <!-- Desktop Navigation Links (hidden on tablet/mobile < 992px) -->
                 <ul class="dsl-nav-menu">
                     <li><a href="{% url 'hmpage' %}" class="dsl-nav-link">Home</a></li>
                     <li><a href="{% url 'aboutpage' %}" class="dsl-nav-link">Our story</a></li>
@@ -48,27 +48,39 @@
                     {% endif %}
                 </ul>
 
-                <!-- Action Links (Cart & Auth) -->
+                <!-- Action Links (Cart, User/Auth & Mobile Hamburger) -->
                 <div class="dsl-nav-actions">
-                    <a href="{% url 'view_cart' %}" class="dsl-cart-btn">
-                        <i class="fas fa-shopping-bag"></i> Cart
+                    <a href="{% url 'view_cart' %}" class="dsl-cart-btn" aria-label="View Cart">
+                        <i class="fas fa-shopping-bag"></i> <span class="dsl-cart-btn-text">Cart</span>
                         {% if cart_count and cart_count > 0 %}
                             <span class="dsl-cart-badge">{{ cart_count }}</span>
                         {% endif %}
                     </a>
 
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'useraccountpage' %}" class="dsl-user-btn" title="Account settings">
-                            <i class="far fa-user-circle"></i> {{ request.user.first_name|default:request.user.username }}
-                        </a>
-                        <a href="{% url 'logout' %}" class="dsl-nav-link text-muted" title="Logout">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </a>
-                    {% else %}
-                        <a href="{% url 'loginpage' %}" class="dsl-auth-btn">
-                            Sign in
-                        </a>
-                    {% endif %}
+                    <!-- Desktop User Menu -->
+                    <div class="dsl-desktop-user-actions">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'useraccountpage' %}" class="dsl-user-btn" title="Account settings">
+                                <i class="far fa-user-circle"></i> {{ request.user.first_name|default:request.user.username }}
+                            </a>
+                            <a href="{% url 'logout' %}" class="dsl-nav-link text-muted" title="Logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'loginpage' %}" class="dsl-auth-btn">
+                                Sign in
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Hamburger Drawer Toggle (Mobile & Tablet Only) -->
+                    <button type="button" class="dsl-mobile-toggle" id="dslMobileToggle" onclick="openDslDrawer()" aria-label="Open navigation menu">
+                        <span class="dsl-hamburger-icon">
+                            <span class="dsl-hamburger-bar bar-1"></span>
+                            <span class="dsl-hamburger-bar bar-2"></span>
+                            <span class="dsl-hamburger-bar bar-3"></span>
+                        </span>
+                    </button>
                 </div>
             </nav>
         </div>
@@ -78,3 +90,168 @@
     <div class="dsl-topbar">
         Free delivery on orders above ₹499 across India
     </div>
+
+    <!-- Navigation Drawer & Backdrop -->
+    <div class="dsl-mobile-backdrop" id="dslMobileBackdrop" onclick="closeDslDrawer()"></div>
+    <aside class="dsl-mobile-drawer" id="dslMobileDrawer" aria-label="Navigation drawer">
+        <div class="dsl-mobile-drawer-header">
+            <a href="{% url 'hmpage' %}" class="dsl-brand">
+                <span class="dsl-logo-badge">D</span>
+                <span class="dsl-brand-name">DebSu <span>Lit</span></span>
+            </a>
+            <button type="button" class="dsl-mobile-drawer-close" id="dslMobileClose" onclick="closeDslDrawer()" aria-label="Close menu">
+                <i class="fas fa-times" style="pointer-events: none;"></i>
+            </button>
+        </div>
+
+        <!-- Mobile User Welcome Box -->
+        <div class="dsl-mobile-user-box">
+            {% if user.is_authenticated %}
+                <div class="dsl-mobile-user-info">
+                    <div class="dsl-mobile-avatar">
+                        {% if request.user.profile_pic %}
+                            <img src="{{ request.user.profile_pic.url }}" alt="{{ request.user.username }}" class="dsl-mobile-avatar-img">
+                        {% else %}
+                            <i class="far fa-user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="dsl-mobile-user-text">
+                        <strong class="dsl-mobile-user-name">{{ request.user.first_name|default:request.user.username }}</strong>
+                        <span class="dsl-mobile-user-tag">@{{ request.user.username }}</span>
+                    </div>
+                </div>
+                <a href="{% url 'useraccountpage' %}" class="dsl-mobile-user-action">
+                    <i class="fas fa-user-cog"></i> Account settings
+                </a>
+            {% else %}
+                <div class="dsl-mobile-auth-actions">
+                    <a href="{% url 'loginpage' %}" class="dsl-auth-btn" style="flex: 1; text-align: center; padding: 0.65rem 0.5rem;">Sign in</a>
+                    <a href="{% url 'signuppage' %}" class="dsl-btn-secondary" style="flex: 1; text-align: center; padding: 0.65rem 0.5rem; font-size: var(--dsl-font-sm);">Create account</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Mobile Nav Links -->
+        <nav class="dsl-mobile-menu">
+            <a href="{% url 'hmpage' %}" class="dsl-mobile-nav-link">
+                <span class="dsl-nav-icon-badge"><i class="fas fa-home"></i></span>
+                <span>Home</span>
+            </a>
+            <a href="{% url 'aboutpage' %}" class="dsl-mobile-nav-link">
+                <span class="dsl-nav-icon-badge"><i class="fas fa-feather-alt"></i></span>
+                <span>Our story</span>
+            </a>
+
+            <!-- Expandable Categories Accordion -->
+            <div class="dsl-mobile-accordion">
+                <button type="button" class="dsl-mobile-accordion-toggle" id="dslMobileCatToggle" onclick="toggleDslCatAccordion()">
+                    <span style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span class="dsl-nav-icon-badge"><i class="fas fa-book-open"></i></span>
+                        <span>Browse books</span>
+                    </span>
+                    <i class="fas fa-chevron-down dsl-accordion-icon" id="dslCatArrow"></i>
+                </button>
+                <div class="dsl-mobile-accordion-body" id="dslMobileCatBody">
+                    <a href="{% url 'hmpage' %}#catalog" class="dsl-mobile-sublink">
+                        <i class="fas fa-layer-group mr-2"></i> All collections
+                    </a>
+                    {% for category in categories %}
+                        <a href="{% url 'arrivalspage' category.id %}" class="dsl-mobile-sublink">
+                            <i class="fas fa-angle-right mr-2"></i> {{ category.cat_name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <a href="{% url 'view_cart' %}" class="dsl-mobile-nav-link">
+                <span class="dsl-nav-icon-badge"><i class="fas fa-shopping-bag"></i></span>
+                <span>Your cart</span>
+                {% if cart_count and cart_count > 0 %}
+                    <span class="dsl-cart-badge" style="margin-left: auto;">{{ cart_count }}</span>
+                {% endif %}
+            </a>
+
+            {% if user.is_authenticated %}
+                <a href="{% url 'my-orders' %}" class="dsl-mobile-nav-link">
+                    <span class="dsl-nav-icon-badge"><i class="fas fa-box-open"></i></span>
+                    <span>My orders</span>
+                </a>
+                <a href="{% url 'logout' %}" class="dsl-mobile-nav-link dsl-nav-link-logout">
+                    <span class="dsl-nav-icon-badge dsl-badge-logout"><i class="fas fa-sign-out-alt"></i></span>
+                    <span>Sign out</span>
+                </a>
+            {% endif %}
+        </nav>
+    </aside>
+
+    <script>
+        function openDslDrawer() {
+            var drawer = document.getElementById('dslMobileDrawer');
+            var backdrop = document.getElementById('dslMobileBackdrop');
+            if (drawer) {
+                drawer.classList.add('open');
+                drawer.classList.add('active');
+            }
+            if (backdrop) {
+                backdrop.classList.add('open');
+                backdrop.classList.add('active');
+            }
+            var toggle = document.getElementById('dslMobileToggle');
+            if (toggle) toggle.classList.add('is-active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDslDrawer() {
+            var drawer = document.getElementById('dslMobileDrawer');
+            var backdrop = document.getElementById('dslMobileBackdrop');
+            var toggle = document.getElementById('dslMobileToggle');
+            if (toggle) toggle.classList.remove('is-active');
+            if (drawer) {
+                drawer.classList.remove('open');
+                drawer.classList.remove('active');
+            }
+            if (backdrop) {
+                backdrop.classList.remove('open');
+                backdrop.classList.remove('active');
+            }
+            document.body.style.overflow = '';
+        }
+
+        function toggleDslCatAccordion() {
+            var catBody = document.getElementById('dslMobileCatBody');
+            var catArrow = document.getElementById('dslCatArrow');
+            if (catBody) {
+                var isOpen = catBody.classList.toggle('open');
+                catBody.classList.toggle('active', isOpen);
+                catBody.classList.toggle('dsl-open', isOpen);
+                if (catArrow) {
+                    catArrow.classList.toggle('open', isOpen);
+                    catArrow.classList.toggle('active', isOpen);
+                    catArrow.classList.toggle('dsl-open', isOpen);
+                    catArrow.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            }
+        }
+
+        (function() {
+            function bindEvents() {
+                var toggle = document.getElementById('dslMobileToggle');
+                var close = document.getElementById('dslMobileClose');
+                var backdrop = document.getElementById('dslMobileBackdrop');
+                var catToggle = document.getElementById('dslMobileCatToggle');
+
+                if (toggle) toggle.onclick = openDslDrawer;
+                if (close) close.onclick = closeDslDrawer;
+                if (backdrop) backdrop.onclick = closeDslDrawer;
+                if (catToggle) catToggle.onclick = toggleDslCatAccordion;
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', bindEvents);
+            } else {
+                bindEvents();
+            }
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeDslDrawer();
+            });
+        })();
+    </script>
